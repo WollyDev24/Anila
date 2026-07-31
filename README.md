@@ -52,7 +52,7 @@ in one adaptive interface—without wrapping the whole experience in a website.
   <tr>
     <td><a href="showcase/mobile/home.png"><img src="showcase/mobile/home.png" width="100%" alt="Anilili mobile home with featured anime and continue watching" /></a></td>
     <td><a href="showcase/mobile/discover.png"><img src="showcase/mobile/discover.png" width="100%" alt="Anilili mobile anime discovery and search screen" /></a></td>
-    <td><a href="showcase/mobile/detailed.png"><img src="showcase/mobile/detailed.png.png width="100%" alt="Anilili mobile anime details screen" /></a></td>
+    <td><a href="showcase/mobile/detailed.png"><img src="showcase/mobile/detailed.png" width="100%" alt="Anilili mobile anime details screen" /></a></td>
   </tr>
 </table>
 
