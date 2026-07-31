@@ -35,7 +35,7 @@ android {
     buildToolsVersion = "35.0.1"
 
     defaultConfig {
-        applicationId = "dev.wolly.anilili"
+        applicationId = "dev.wolly.anila"
         // Fire OS 5 devices (including the 1st/2nd-gen Fire TV Sticks) report API 22.
         minSdk = 22
         targetSdk = 36
