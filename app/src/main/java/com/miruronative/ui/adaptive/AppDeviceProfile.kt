@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.border
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.runtime.getValue
@@ -124,7 +123,7 @@ fun rememberAppDeviceProfile(): AppDeviceProfile {
 /** Clear focus treatment for TV remotes, keyboards, and game controllers. */
 @Composable
 fun Modifier.focusHighlight(
-    shape: Shape = RoundedCornerShape(12.dp),
+    shape: Shape = MaterialTheme.shapes.medium,
     focusedScale: Float = if (LocalAppDeviceProfile.current.isTv) 1.06f else 1.025f,
 ): Modifier {
     var focused by remember { mutableStateOf(false) }

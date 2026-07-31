@@ -3,6 +3,7 @@ package com.miruronative.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ButtonDefaults
@@ -24,7 +24,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -113,12 +112,12 @@ fun ContinueWatchingActionsDialog(
                 modifier = Modifier
                     .widthIn(max = 440.dp)
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
+                    .clip(MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.surface)
                     .border(
                         1.dp,
                         MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                        RoundedCornerShape(16.dp),
+                        MaterialTheme.shapes.medium,
                     )
                     .padding(20.dp),
             ) {
@@ -243,7 +242,7 @@ private fun ContinueWatchingActionsContent(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(
+            ExpressiveTextButton(
                 onClick = onRemove,
                 enabled = busyStatus == null,
                 colors = ButtonDefaults.textButtonColors(
@@ -253,7 +252,7 @@ private fun ContinueWatchingActionsContent(
                 Text("Remove from Continue Watching")
             }
             Spacer(Modifier.weight(1f))
-            TextButton(onClick = onClose, enabled = busyStatus == null) {
+            ExpressiveTextButton(onClick = onClose, enabled = busyStatus == null) {
                 Text("Close")
             }
         }
@@ -269,15 +268,17 @@ private fun ContinueWatchingDestinationCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(11.dp)
+    val shape = MaterialTheme.shapes.small
     val textColor = if (selected) {
         MaterialTheme.colorScheme.onPrimary
     } else {
         MaterialTheme.colorScheme.onSurface
     }
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = modifier
             .height(64.dp)
+            .expressivePress(interactionSource, shape, pressScale = 0.98f, pressRadiusFraction = 0.6f)
             .clip(shape)
             .background(
                 if (selected) MaterialTheme.colorScheme.primary
@@ -289,7 +290,7 @@ private fun ContinueWatchingDestinationCard(
                 else MaterialTheme.colorScheme.outline,
                 shape = shape,
             )
-            .clickable(enabled = enabled, onClick = onClick)
+            .clickable(enabled = enabled, interactionSource = interactionSource, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -48,7 +48,7 @@ object UpdateManager {
         data class Failed(val message: String) : State
     }
 
-    private const val RELEASES_LATEST = "https://api.github.com/repos/kompoti121/anilili/releases/latest"
+    private const val RELEASES_LATEST = "https://api.github.com/repos/wollydev24/anilili/releases/latest"
     private const val PREFS = "anilili_updates"
     private const val KEY_LAST_CHECK = "last_check_ms"
     private val CHECK_INTERVAL_MS = TimeUnit.HOURS.toMillis(12)

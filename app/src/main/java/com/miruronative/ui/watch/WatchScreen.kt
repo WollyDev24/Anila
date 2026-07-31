@@ -46,6 +46,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -66,12 +67,10 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -113,6 +112,10 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.ProviderCatalog
 import com.miruronative.data.library.LibraryStore
 import com.miruronative.data.library.WatchlistEntry
@@ -324,12 +327,12 @@ fun WatchScreen(
             }
             is UiState.Error -> Column(Modifier.fillMaxSize()) {
                 ErrorBox(s.message, onRetry = vm::retry, modifier = Modifier.weight(1f))
-                TextButton(
+                ExpressiveTextButton(
                     onClick = { webFallback = true },
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(bottom = 24.dp)
-                        .focusHighlight(RoundedCornerShape(20.dp)),
+                        .focusHighlight(MaterialTheme.shapes.large),
                 ) { Text("Open in web player") }
                 BackButton(pauseAndBack, Modifier.align(Alignment.Start))
             }
@@ -800,14 +803,14 @@ private fun WatchContent(
                             // touch it lives in the player's own control bar; a remote has no
                             // pointer to summon that bar with while the video owns focus, so TV
                             // keeps a corner button of its own.
-                            if (device.isTv) IconButton(
+                            if (device.isTv) ExpressiveIconButton(
                                 onClick = onToggleFullscreen,
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
                                     .focusProperties { canFocus = fullscreen }
                                     .statusBarsPadding()
                                     .padding(4.dp)
-                                    .focusHighlight(RoundedCornerShape(24.dp)),
+                                    .focusHighlight(MaterialTheme.shapes.extraLarge),
                             ) {
                                 Icon(
                                     if (fullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
@@ -1115,8 +1118,8 @@ private fun WatchEpisodeSummary(
                             }
                             false
                         }
-                        .focusHighlight(RoundedCornerShape(16.dp))
-                        .clip(RoundedCornerShape(16.dp))
+                        .focusHighlight(MaterialTheme.shapes.large)
+                        .clip(MaterialTheme.shapes.large)
                         .semantics {
                             onClick(label = if (descriptionExpanded) "Show less" else "Show more") {
                                 descriptionExpanded = !descriptionExpanded
@@ -1167,7 +1170,7 @@ private fun WatchEpisodeSummary(
             }
             val hasNativeDownloadAction = canDownload || episodeDownload != null || downloadPreparing
             if (providerDownloadUrl != null) {
-                IconButton(
+                ExpressiveIconButton(
                     onClick = {
                         runCatching {
                             context.startActivity(
@@ -1213,7 +1216,7 @@ private fun WatchEpisodeSummary(
                     episodeDownload?.state == EpisodeDownloadState.REMOVING -> "Removing episode download"
                     else -> "Download episode"
                 }
-                IconButton(
+                ExpressiveIconButton(
                     onClick = onDownload,
                     enabled = downloadEnabled,
                     modifier = Modifier.focusHighlight(CircleShape),
@@ -1353,7 +1356,7 @@ private fun EpisodeDownloadDialog(
                             selected = quality == option,
                             onClick = { onQualityChange(option) },
                             label = { Text(option.label) },
-                            modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                            modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                         )
                     }
                 }
@@ -1385,7 +1388,7 @@ private fun EpisodeDownloadDialog(
                                 onClick = { onDestinationChange(option) },
                                 enabled = option != DownloadDestination.APP_ONLY || !alreadyInApp,
                                 label = { Text(option.label) },
-                                modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                                modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                             )
                         }
                     }
@@ -1442,7 +1445,7 @@ private fun EpisodeDownloadDialog(
                             selected = !batching,
                             onClick = { onBatchSizeChange(1) },
                             label = { Text("This episode") },
-                            modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                            modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                         )
                         // Bounded sizes rather than "everything": a 500-episode run is ~200 GB and
                         // hours of provider requests, which is not a choice worth offering.
@@ -1453,7 +1456,7 @@ private fun EpisodeDownloadDialog(
                                     selected = batchCount == size,
                                     onClick = { onBatchSizeChange(size) },
                                     label = { Text("Next $size") },
-                                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                                    modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                                 )
                             }
                         // When fewer remain than the smallest batch, offer exactly what is left.
@@ -1462,7 +1465,7 @@ private fun EpisodeDownloadDialog(
                                 selected = batching,
                                 onClick = { onBatchSizeChange(remainingCount) },
                                 label = { Text("All $remainingCount left") },
-                                modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                                modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                             )
                         }
                     }
@@ -1515,7 +1518,7 @@ private fun EpisodeDownloadDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onConfirm, enabled = confirmEnabled) {
+            ExpressiveTextButton(onClick = onConfirm, enabled = confirmEnabled) {
                 Text(
                     when {
                         tight -> "Download anyway"
@@ -1526,7 +1529,7 @@ private fun EpisodeDownloadDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            ExpressiveTextButton(onClick = onDismiss) {
                 Text("Cancel")
             }
         },
@@ -1743,8 +1746,8 @@ private fun MobileEpisodeRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = LocalAppDeviceProfile.current.pagePadding, vertical = 5.dp)
-            .focusHighlight(RoundedCornerShape(12.dp))
-            .clip(RoundedCornerShape(12.dp))
+            .focusHighlight(MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.medium)
             .background(
                 if (selected) MaterialTheme.colorScheme.surfaceVariant
                 else Color.Transparent,
@@ -1757,7 +1760,7 @@ private fun MobileEpisodeRow(
             Modifier
                 .width(132.dp)
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(9.dp)),
+                .clip(MaterialTheme.shapes.small),
         ) {
             EpisodeArtwork(
                 image = episodeArtworkImage(episode.image, fallbackImage),
@@ -1772,7 +1775,7 @@ private fun MobileEpisodeRow(
                 modifier = Modifier
                     .align(if (watchedFraction > 0.01f) Alignment.TopEnd else Alignment.BottomEnd)
                     .padding(5.dp)
-                    .clip(RoundedCornerShape(5.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(Color.Black.copy(alpha = 0.78f))
                     .padding(horizontal = 6.dp, vertical = 3.dp),
             )
@@ -1785,7 +1788,7 @@ private fun MobileEpisodeRow(
             )
             DownloadCoverBadge(
                 state = downloadState,
-                modifier = Modifier.matchParentSize().clip(RoundedCornerShape(9.dp)),
+                modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.small),
                 compact = true,
             )
         }
@@ -1960,20 +1963,23 @@ private fun SourceSelectors(
                     .padding(top = if (device.isTv) 0.dp else 84.dp),
                 contentAlignment = if (device.isTv) Alignment.Center else Alignment.BottomCenter,
             ) {
+            val serverPanelShape = if (device.isTv) MaterialTheme.shapes.medium
+            else RoundedCornerShape(
+                topStart = MaterialTheme.shapes.extraLarge.topStart,
+                topEnd = MaterialTheme.shapes.extraLarge.topEnd,
+                bottomEnd = CornerSize(0.dp),
+                bottomStart = CornerSize(0.dp),
+            )
             Box(
                 modifier = Modifier
                     .widthIn(max = 440.dp)
                     .fillMaxWidth()
-                    .clip(
-                        if (device.isTv) RoundedCornerShape(16.dp)
-                        else RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
-                    )
+                    .clip(serverPanelShape)
                     .background(MaterialTheme.colorScheme.surface)
                     .border(
                         1.dp,
                         MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                        if (device.isTv) RoundedCornerShape(16.dp)
-                        else RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                        serverPanelShape,
                     )
                     .padding(20.dp)
             ) {
@@ -2090,14 +2096,14 @@ private fun SourceSelectors(
                                                     true
                                                 }
                                             }
-                                            .focusHighlight(RoundedCornerShape(8.dp))
-                                            .clip(RoundedCornerShape(8.dp))
+                                            .focusHighlight(MaterialTheme.shapes.small)
+                                            .clip(MaterialTheme.shapes.small)
                                             .background(bg)
                                             .border(
                                                 1.dp,
                                                 if (selected || preferred) MaterialTheme.colorScheme.primary
                                                 else MaterialTheme.colorScheme.outline,
-                                                RoundedCornerShape(8.dp)
+                                                MaterialTheme.shapes.small
                                             )
                                             .clickable(onClick = selectServer),
                                         contentAlignment = Alignment.Center,
@@ -2148,7 +2154,7 @@ private fun SourceSelectors(
                         }
                     }
 
-                    TextButton(
+                    ExpressiveTextButton(
                         onClick = {
                             showServerDialog = false
                             if (device.isTv) runCatching { focusRequester.requestFocus() }
@@ -2266,7 +2272,7 @@ private fun MobileServerPickerContent(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(64.dp)
-                                .clip(RoundedCornerShape(11.dp))
+                                .clip(MaterialTheme.shapes.small)
                                 .background(
                                     if (selected) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.surfaceVariant,
@@ -2275,7 +2281,7 @@ private fun MobileServerPickerContent(
                                     width = 1.dp,
                                     color = if (selected || preferred) MaterialTheme.colorScheme.primary
                                     else MaterialTheme.colorScheme.outline,
-                                    shape = RoundedCornerShape(11.dp),
+                                    shape = MaterialTheme.shapes.small,
                                 )
                                 .clickable { onSelect(server) }
                                 .padding(horizontal = 10.dp, vertical = 7.dp),
@@ -2337,7 +2343,7 @@ private fun MobileServerPickerContent(
             }
         }
 
-        TextButton(onClick = onClose, modifier = Modifier.align(Alignment.End)) {
+        ExpressiveTextButton(onClick = onClose, modifier = Modifier.align(Alignment.End)) {
             Text("Close")
         }
     }
@@ -2348,7 +2354,7 @@ private fun SourceCategoryBadge(category: Category, selected: Boolean) {
     val color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(50))
+            .clip(CircleShape)
             .background(color.copy(alpha = 0.16f))
             .padding(horizontal = 6.dp, vertical = 1.dp),
     ) {
@@ -2388,8 +2394,8 @@ private fun CompactClickablePill(
                     true
                 }
             }
-            .focusHighlight(RoundedCornerShape(10.dp))
-            .clip(RoundedCornerShape(10.dp))
+            .focusHighlight(MaterialTheme.shapes.small)
+            .clip(MaterialTheme.shapes.small)
             .background(
                 if (active) MaterialTheme.colorScheme.primary
                 else MaterialTheme.colorScheme.surface,
@@ -2397,7 +2403,7 @@ private fun CompactClickablePill(
             .border(
                 1.dp,
                 if (active) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                RoundedCornerShape(10.dp),
+                MaterialTheme.shapes.small,
             )
             .clickable(enabled = enabled, onClick = onClick)
             .padding(start = 12.dp, end = 6.dp, top = 8.dp, bottom = 8.dp),
@@ -2445,10 +2451,10 @@ private fun CompactDropdown(
         Row(
             modifier = Modifier
                 .then(if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier)
-                .focusHighlight(RoundedCornerShape(10.dp))
-                .clip(RoundedCornerShape(10.dp))
+                .focusHighlight(MaterialTheme.shapes.small)
+                .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.surface)
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
+                .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.small)
                 .clickable(enabled = enabled) { expanded = true }
                 .padding(start = 12.dp, end = 6.dp, top = 8.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -2475,9 +2481,9 @@ private fun NoSource(onWebFallback: () -> Unit) {
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.White,
             )
-            TextButton(
+            ExpressiveTextButton(
                 onClick = onWebFallback,
-                modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
             ) { Text("Open in web player") }
         }
     }
@@ -2526,7 +2532,7 @@ private fun BackButton(onBack: () -> Unit, modifier: Modifier = Modifier) {
     } else {
         Modifier
     }
-    IconButton(
+    ExpressiveIconButton(
         onClick = onBack,
         // The app draws edge-to-edge, so keep the button below the clock/battery area whenever
         // the status bar is visible (the inset is zero in fullscreen, where the bars are hidden).
@@ -2534,7 +2540,7 @@ private fun BackButton(onBack: () -> Unit, modifier: Modifier = Modifier) {
             .then(tvFocusPolicy)
             .statusBarsPadding()
             .padding(4.dp)
-            .focusHighlight(RoundedCornerShape(24.dp)),
+            .focusHighlight(MaterialTheme.shapes.extraLarge),
     ) {
         Icon(
             Icons.AutoMirrored.Filled.ArrowBack,
@@ -2589,9 +2595,9 @@ private fun BulkDownloadStatus(modifier: Modifier = Modifier) {
             },
             modifier = Modifier.weight(1f),
         )
-        TextButton(
+        ExpressiveTextButton(
             onClick = { if (state.isRunning) BulkEpisodeDownloads.cancel() else BulkEpisodeDownloads.dismiss() },
-            modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+            modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
         ) {
             Text(if (state.isRunning) "Stop" else "Dismiss")
         }

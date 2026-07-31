@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
@@ -26,7 +25,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,6 +48,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.ui.adaptive.focusHighlight
 
 import androidx.compose.material.icons.automirrored.filled.ViewList
@@ -153,7 +155,7 @@ internal fun TvPlayerControls(
                     .align(Alignment.TopStart)
                     .padding(start = 32.dp, top = 28.dp)
                     .widthIn(max = 620.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(MaterialTheme.shapes.medium)
                     .background(Color.Black.copy(alpha = 0.62f))
                     .padding(horizontal = 18.dp, vertical = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -301,14 +303,14 @@ private fun TvControlButton(
     modifier: Modifier = Modifier,
     icon: @Composable () -> Unit,
 ) {
-    IconButton(
+    ExpressiveIconButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier
             .size(if (large) 62.dp else 48.dp)
             .onFocusChanged { if (it.isFocused) onFocused(label) }
             .semantics { contentDescription = label }
-            .focusHighlight(RoundedCornerShape(32.dp), focusedScale = if (large) 1.15f else 1.10f),
+            .focusHighlight(MaterialTheme.shapes.extraLarge, focusedScale = if (large) 1.15f else 1.10f),
     ) {
         icon()
     }

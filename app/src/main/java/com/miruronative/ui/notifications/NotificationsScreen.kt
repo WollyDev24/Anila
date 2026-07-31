@@ -21,18 +21,15 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -55,6 +52,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.AppGraph
 import com.miruronative.data.auth.AuthManager
 import com.miruronative.data.model.AppNotification
@@ -154,37 +155,37 @@ fun NotificationsScreen(
             ScrollAwareTopBar { TopAppBar(
                 title = { Text("Notifications", fontWeight = FontWeight.Black) },
                 navigationIcon = {
-                    IconButton(
+                    ExpressiveIconButton(
                         onClick = onBack,
                         modifier = Modifier
                             .focusRequester(backFocusRequester)
                             .focusProperties {
                                 if (device.isTv) tvFocusRedirect(tvContentFocusTarget) { down = it }
                             }
-                            .focusHighlight(RoundedCornerShape(24.dp)),
+                            .focusHighlight(MaterialTheme.shapes.extraLarge),
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
-                    IconButton(
+                    ExpressiveIconButton(
                         onClick = vm::refresh,
                         modifier = Modifier
                             .focusProperties {
                                 if (device.isTv) tvFocusRedirect(tvContentFocusTarget) { down = it }
                             }
-                            .focusHighlight(RoundedCornerShape(24.dp)),
+                            .focusHighlight(MaterialTheme.shapes.extraLarge),
                     ) {
                         Icon(Icons.Default.Refresh, contentDescription = "Refresh")
                     }
-                    TextButton(
+                    ExpressiveTextButton(
                         onClick = vm::markAllRead,
                         enabled = unreadCount > 0,
                         modifier = Modifier
                             .focusProperties {
                                 if (device.isTv) tvFocusRedirect(tvContentFocusTarget) { down = it }
                             }
-                            .focusHighlight(RoundedCornerShape(20.dp)),
+                            .focusHighlight(MaterialTheme.shapes.large),
                     ) {
                         Text("Mark all read")
                     }
@@ -290,7 +291,7 @@ private fun NotificationList(
                         selected = tab == entry,
                         onClick = { onTab(entry) },
                         label = { Text(if (unreadTotal > 0) "${entry.label}  $count" else entry.label) },
-                        modifier = Modifier.focusHighlight(RoundedCornerShape(8.dp)),
+                        modifier = Modifier.focusHighlight(MaterialTheme.shapes.small),
                     )
                 }
             }
@@ -369,7 +370,7 @@ private fun TvNotificationGrid(
                                 else Modifier,
                             )
                             .focusProperties { up = backFocusRequester }
-                            .focusHighlight(RoundedCornerShape(8.dp)),
+                            .focusHighlight(MaterialTheme.shapes.small),
                     )
                 }
             }
@@ -416,7 +417,7 @@ private fun NotificationCard(
     onClick: () -> Unit,
     compactTv: Boolean = false,
 ) {
-    val shape = RoundedCornerShape(14.dp)
+    val shape = MaterialTheme.shapes.medium
     Box(
         Modifier
             .fillMaxWidth()
@@ -459,7 +460,7 @@ private fun NotificationCard(
                         width = if (compactTv) 64.dp else 58.dp,
                         height = if (compactTv) 86.dp else 76.dp,
                     )
-                    .clip(RoundedCornerShape(8.dp)),
+                    .clip(MaterialTheme.shapes.small),
             )
             Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                 Text(
@@ -506,7 +507,7 @@ private fun NotificationBadge(badge: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,
         modifier = modifier
-            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.85f), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.85f), MaterialTheme.shapes.medium)
             .padding(horizontal = 10.dp, vertical = 4.dp),
     )
 }
@@ -518,7 +519,7 @@ private fun NotificationDate(epochSeconds: Long, modifier: Modifier = Modifier) 
         style = MaterialTheme.typography.labelMedium,
         fontWeight = FontWeight.Bold,
         modifier = modifier
-            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.85f), RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.85f), MaterialTheme.shapes.medium)
             .padding(horizontal = 10.dp, vertical = 4.dp),
     )
 }

@@ -28,13 +28,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -60,6 +60,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.model.EpisodeItem
 import com.miruronative.data.settings.SettingsStore
 import com.miruronative.ui.adaptive.focusHighlight
@@ -119,8 +123,13 @@ internal fun InPlayerEpisodeDrawer(
                 .fillMaxHeight()
                 .width(360.dp)
                 .clickable(enabled = false) {}, // Scrim protection
-            color = Color(0xF012131A),
-            shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp),
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.94f),
+            shape = RoundedCornerShape(
+                topStart = MaterialTheme.shapes.large.topStart,
+                topEnd = CornerSize(0.dp),
+                bottomEnd = CornerSize(0.dp),
+                bottomStart = MaterialTheme.shapes.large.bottomStart,
+            ),
             tonalElevation = 8.dp,
         ) {
             Column(
@@ -138,16 +147,16 @@ internal fun InPlayerEpisodeDrawer(
                         text = "Episodes",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
-                    IconButton(
+                    ExpressiveIconButton(
                         onClick = onDismiss,
-                        modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                        modifier = Modifier.focusHighlight(MaterialTheme.shapes.extraLarge),
                     ) {
                         Icon(
                             Icons.Default.Close,
                             contentDescription = "Close episodes",
-                            tint = Color.White.copy(alpha = 0.85f),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -250,11 +259,12 @@ private fun SeasonHeaderRow(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .focusHighlight(RoundedCornerShape(10.dp))
-            .clip(RoundedCornerShape(10.dp))
+            .focusHighlight(MaterialTheme.shapes.small)
+            .clip(MaterialTheme.shapes.small)
             .clickable(onClick = onClick),
-        color = if (isExpanded) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f) else Color.White.copy(alpha = 0.07f),
-        shape = RoundedCornerShape(10.dp),
+        color = if (isExpanded) MaterialTheme.colorScheme.primaryContainer
+        else MaterialTheme.colorScheme.surfaceContainerHighest,
+        shape = MaterialTheme.shapes.small,
     ) {
         Row(
             modifier = Modifier
@@ -268,18 +278,18 @@ private fun SeasonHeaderRow(
                     text = "Season $seasonNumber ($rangeLabel)",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     text = "$episodeCount episodes",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White.copy(alpha = 0.65f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Icon(
                 imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                 contentDescription = if (isExpanded) "Collapse season" else "Expand season",
-                tint = Color.White.copy(alpha = 0.85f),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -297,11 +307,11 @@ private fun InPlayerEpisodeItemRow(
     modifier: Modifier = Modifier,
 ) {
     val backgroundColor = if (isCurrent) {
-        Color(0xFF2E1C4E)
+        MaterialTheme.colorScheme.primaryContainer
     } else {
-        Color(0xFF1E1F2B)
+        MaterialTheme.colorScheme.surfaceContainerHigh
     }
-    val borderColor = if (isCurrent) Color(0xFF8B5CF6) else Color.Transparent
+    val borderColor = if (isCurrent) MaterialTheme.colorScheme.primary else Color.Transparent
 
     Row(
         modifier = modifier
@@ -319,10 +329,10 @@ private fun InPlayerEpisodeItemRow(
                     true
                 }
             }
-            .focusHighlight(RoundedCornerShape(10.dp), focusedScale = 1.03f)
-            .clip(RoundedCornerShape(10.dp))
+            .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.03f)
+            .clip(MaterialTheme.shapes.small)
             .background(backgroundColor)
-            .border(1.5.dp, borderColor, RoundedCornerShape(10.dp))
+            .border(1.5.dp, borderColor, MaterialTheme.shapes.small)
             .clickable(onClick = onClick)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -332,7 +342,7 @@ private fun InPlayerEpisodeItemRow(
             text = episode.displayNumber,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
-            color = if (isCurrent) Color(0xFFC4B5FD) else Color.White.copy(alpha = 0.7f),
+            color = if (isCurrent) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.width(28.dp),
         )
 
@@ -340,8 +350,8 @@ private fun InPlayerEpisodeItemRow(
             modifier = Modifier
                 .width(80.dp)
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(6.dp))
-                .background(Color.Black.copy(alpha = 0.4f)),
+                .clip(MaterialTheme.shapes.extraSmall)
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center,
         ) {
             EpisodeArtwork(
@@ -375,7 +385,7 @@ private fun InPlayerEpisodeItemRow(
                     text = episode.distinctTitle ?: "Episode ${episode.displayNumber}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Medium,
-                    color = if (isCurrent) Color(0xFFC4B5FD) else Color.White,
+                    color = if (isCurrent) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false),

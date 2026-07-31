@@ -11,7 +11,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,6 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.settings.SettingsStore
 import com.miruronative.data.update.UpdateManager
 
@@ -57,11 +60,11 @@ fun UpdatePromptHost() {
                 }
             },
             confirmButton = {
-                TextButton(onClick = { UpdateManager.download(context) }) { Text("Update") }
+                ExpressiveTextButton(onClick = { UpdateManager.download(context) }) { Text("Update") }
             },
             dismissButton = {
                 Row {
-                    TextButton(onClick = {
+                    ExpressiveTextButton(onClick = {
                         // Same switch as Settings > "Check for updates on launch"; manual
                         // checks from Settings keep working.
                         SettingsStore.setUpdateCheckOnLaunch(false)
@@ -69,7 +72,7 @@ fun UpdatePromptHost() {
                     }) {
                         Text("Don't remind me", color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    TextButton(onClick = UpdateManager::dismiss) { Text("Not now") }
+                    ExpressiveTextButton(onClick = UpdateManager::dismiss) { Text("Not now") }
                 }
             },
         )
@@ -105,10 +108,10 @@ fun UpdatePromptHost() {
                 )
             },
             confirmButton = {
-                TextButton(onClick = { UpdateManager.install(context) }) { Text("Install") }
+                ExpressiveTextButton(onClick = { UpdateManager.install(context) }) { Text("Install") }
             },
             dismissButton = {
-                TextButton(onClick = UpdateManager::dismiss) { Text("Later") }
+                ExpressiveTextButton(onClick = UpdateManager::dismiss) { Text("Later") }
             },
         )
 
@@ -127,7 +130,7 @@ fun UpdatePromptHost() {
                 )
             },
             confirmButton = {
-                TextButton(onClick = UpdateManager::dismiss) { Text("OK") }
+                ExpressiveTextButton(onClick = UpdateManager::dismiss) { Text("OK") }
             },
         )
 
@@ -136,7 +139,7 @@ fun UpdatePromptHost() {
             title = { Text("Update failed", fontWeight = FontWeight.Black) },
             text = { Text(s.message, style = MaterialTheme.typography.bodyMedium) },
             confirmButton = {
-                TextButton(onClick = UpdateManager::dismiss) { Text("Close") }
+                ExpressiveTextButton(onClick = UpdateManager::dismiss) { Text("Close") }
             },
         )
 

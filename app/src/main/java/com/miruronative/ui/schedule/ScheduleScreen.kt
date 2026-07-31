@@ -22,13 +22,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -53,6 +51,10 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.model.AiringSchedule
 import com.miruronative.data.reminder.ReminderManager
 import com.miruronative.ui.UiState
@@ -160,8 +162,8 @@ private fun DayTabs(selected: Int, onSelect: (Int) -> Unit) {
                 modifier = Modifier
                     .width(88.dp)
                     .height(68.dp)
-                    .focusHighlight(RoundedCornerShape(14.dp))
-                    .clip(RoundedCornerShape(14.dp))
+                    .focusHighlight(MaterialTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.medium)
                     .background(
                         if (active) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.surface,
@@ -170,7 +172,7 @@ private fun DayTabs(selected: Int, onSelect: (Int) -> Unit) {
                         width = 1.dp,
                         color = if (active) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.outline,
-                        shape = RoundedCornerShape(14.dp),
+                        shape = MaterialTheme.shapes.medium,
                     )
                     .clickable { onSelect(offset) }
                     .padding(vertical = 10.dp),
@@ -301,10 +303,10 @@ private fun ScheduleCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = device.pagePadding + 28.dp, end = device.pagePadding, top = 5.dp, bottom = 7.dp)
-            .focusHighlight(RoundedCornerShape(14.dp))
-            .clip(RoundedCornerShape(14.dp))
+            .focusHighlight(MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(14.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
             .clickable { onAnimeClick(media.id) }
             .padding(10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -314,7 +316,7 @@ private fun ScheduleCard(
             contentDescription = media.title.preferred,
             modifier = Modifier
                 .size(width = 62.dp, height = 82.dp)
-                .clip(RoundedCornerShape(9.dp)),
+                .clip(MaterialTheme.shapes.small),
             contentScale = ContentScale.Crop,
         )
         Column(
@@ -351,12 +353,12 @@ private fun ScheduleCard(
                 modifier = Modifier.padding(top = 4.dp),
             )
             if (upcoming) {
-                IconButton(
+                ExpressiveIconButton(
                     onClick = { onToggleReminder(item) },
                     modifier = Modifier
                         .padding(top = 2.dp)
                         .size(36.dp)
-                        .focusHighlight(RoundedCornerShape(18.dp)),
+                        .focusHighlight(MaterialTheme.shapes.large),
                 ) {
                     Icon(
                         imageVector = if (reminded) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
@@ -378,7 +380,7 @@ private fun ScheduleTag(label: String) {
         style = MaterialTheme.typography.labelSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(MaterialTheme.shapes.extraSmall)
             .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 7.dp, vertical = 3.dp),
     )

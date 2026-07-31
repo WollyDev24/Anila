@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,9 +59,9 @@ fun ErrorBox(message: String, onRetry: (() -> Unit)? = null, modifier: Modifier 
                 textAlign = TextAlign.Center,
             )
             if (onRetry != null) {
-                Button(
+                ExpressiveButton(
                     onClick = onRetry,
-                    modifier = Modifier.padding(top = 16.dp).focusHighlight(RoundedCornerShape(24.dp)),
+                    modifier = Modifier.padding(top = 16.dp).focusHighlight(MaterialTheme.shapes.extraLarge),
                 ) {
                     Text("Retry")
                 }
@@ -120,9 +118,9 @@ fun SectionHeader(
     ) {
         Text(title, style = MaterialTheme.typography.titleLarge)
         if (actionLabel != null && onAction != null) {
-            TextButton(
+            ExpressiveTextButton(
                 onClick = onAction,
-                modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
             ) { Text(actionLabel) }
         }
     }

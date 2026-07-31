@@ -17,13 +17,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,6 +37,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.diagnostics.CrashReporter
 import com.miruronative.diagnostics.DiagnosticsLog
 import com.miruronative.diagnostics.WebViewProcessController
@@ -626,12 +627,12 @@ fun LoginWebView(
                     )
                 }
             }
-            IconButton(
+            ExpressiveIconButton(
                 onClick = onCancel,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(device.pagePadding)
-                    .focusHighlight(RoundedCornerShape(24.dp)),
+                    .focusHighlight(MaterialTheme.shapes.extraLarge),
             ) {
                 Icon(Icons.Default.Close, contentDescription = "Cancel")
             }
@@ -674,7 +675,7 @@ private fun LoginLoadStatus(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                 )
-                Button(onClick = onRetry) {
+                ExpressiveButton(onClick = onRetry) {
                     Text("Retry")
                 }
             }

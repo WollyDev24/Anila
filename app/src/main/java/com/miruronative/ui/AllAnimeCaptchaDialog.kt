@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,6 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.remote.ALLANIME_USER_AGENT
 import com.miruronative.data.remote.AllAnimeCaptchaCoordinator
 import com.miruronative.data.remote.AllAnimeCaptchaSolution
@@ -82,7 +85,7 @@ private fun AllAnimeCaptchaDialog(
                 ) {
                     CaptchaWebView(challenge.url, onSolved)
                 }
-                Button(onClick = onCancel, modifier = Modifier.align(Alignment.End)) {
+                ExpressiveButton(onClick = onCancel, modifier = Modifier.align(Alignment.End)) {
                     Text("Cancel")
                 }
             }

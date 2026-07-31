@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -82,7 +82,7 @@ fun TvHeroArtwork(
                     .padding(end = posterEndPadding.dp, top = 24.dp, bottom = 24.dp)
                     .fillMaxHeight()
                     .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(14.dp)),
+                    .clip(MaterialTheme.shapes.medium),
                 contentScale = ContentScale.Fit,
             )
         }

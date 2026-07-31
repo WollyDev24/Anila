@@ -35,7 +35,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed as gridItemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -44,20 +43,17 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -92,6 +88,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.model.DiscoverFilters
 import com.miruronative.data.model.DiscoverOptions
 import com.miruronative.data.model.Media
@@ -269,7 +269,7 @@ private fun SearchTopBar(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                TextButton(onClick = vm::clearAll) { Text("Reset") }
+                ExpressiveTextButton(onClick = vm::clearAll) { Text("Reset") }
             }
 
             Row(
@@ -305,12 +305,12 @@ private fun SearchTopBar(
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         trailingIcon = {
                             if (vm.query.isNotEmpty()) {
-                                IconButton(onClick = { vm.onQueryChange("") }, modifier = Modifier.size(40.dp)) {
+                                ExpressiveIconButton(onClick = { vm.onQueryChange("") }, modifier = Modifier.size(40.dp)) {
                                     Icon(Icons.Default.Close, contentDescription = "Clear search")
                                 }
                             }
                         },
-                        shape = RoundedCornerShape(10.dp),
+                        shape = MaterialTheme.shapes.medium,
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(onSearch = {
@@ -324,14 +324,14 @@ private fun SearchTopBar(
                         ),
                     )
                 }
-                Button(
+                ExpressiveButton(
                     onClick = onOpenFilters,
                     contentPadding = PaddingValues(horizontal = 13.dp),
                     modifier = Modifier
                         .focusRequester(filterFocusRequester)
                         .height(56.dp)
-                        .focusHighlight(RoundedCornerShape(10.dp)),
-                    shape = RoundedCornerShape(10.dp),
+                        .focusHighlight(MaterialTheme.shapes.medium),
+                    shape = MaterialTheme.shapes.medium,
                 ) {
                     Icon(Icons.Default.FilterList, contentDescription = "Open filters")
                     if (vm.filters.activeCount > 0) {
@@ -404,7 +404,7 @@ private fun SearchSuggestions(
     AnimatedVisibility(visible = suggestions.isNotEmpty()) {
         Surface(
             modifier = Modifier.fillMaxWidth().padding(top = 6.dp),
-            shape = RoundedCornerShape(10.dp),
+            shape = MaterialTheme.shapes.medium,
             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = .55f),
             tonalElevation = 2.dp,
         ) {
@@ -490,7 +490,7 @@ private fun TvSearchHistory(
                                     .clickable { onRemove(term) },
                             )
                         },
-                        modifier = Modifier.focusHighlight(RoundedCornerShape(8.dp)),
+                        modifier = Modifier.focusHighlight(MaterialTheme.shapes.small),
                     )
                 }
             }
@@ -727,12 +727,12 @@ private fun FilterSheet(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            TextButton(
+            ExpressiveTextButton(
                 onClick = vm::clearFilters,
                 modifier = if (device.isTv) {
                     Modifier
                         .focusRequester(initialFocusRequester)
-                        .focusHighlight(RoundedCornerShape(8.dp))
+                        .focusHighlight(MaterialTheme.shapes.small)
                 } else {
                     Modifier
                 },
@@ -767,7 +767,7 @@ private fun FilterSheet(
                                 modifier = Modifier.size(22.dp),
                                 strokeWidth = 2.dp,
                             )
-                            vm.studioQuery.isNotEmpty() -> IconButton(onClick = vm::clearStudio) {
+                            vm.studioQuery.isNotEmpty() -> ExpressiveIconButton(onClick = vm::clearStudio) {
                                 Icon(Icons.Default.Close, contentDescription = "Clear studio")
                             }
                         }
@@ -779,7 +779,7 @@ private fun FilterSheet(
                         focusManager.moveFocus(FocusDirection.Down)
                     }),
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
+                    shape = MaterialTheme.shapes.medium,
                 )
             }
             if (studioSuggestions.isNotEmpty()) {
@@ -793,7 +793,7 @@ private fun FilterSheet(
                             selected = filters.studioId == studio.id,
                             onClick = { vm.selectStudio(studio) },
                             label = { Text(name) },
-                            modifier = Modifier.focusHighlight(RoundedCornerShape(8.dp)),
+                            modifier = Modifier.focusHighlight(MaterialTheme.shapes.small),
                         )
                     }
                 }
@@ -831,7 +831,7 @@ private fun FilterSheet(
                     placeholder = { Text("Any year (for example 2024)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
-                    shape = RoundedCornerShape(10.dp),
+                    shape = MaterialTheme.shapes.medium,
                 )
             }
         }
@@ -883,7 +883,7 @@ private fun FilterSheet(
                         placeholder = { Text("Find a tag") },
                         leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                         singleLine = true,
-                        shape = RoundedCornerShape(10.dp),
+                        shape = MaterialTheme.shapes.medium,
                     )
                 }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -899,10 +899,10 @@ private fun FilterSheet(
                 }
             }
         }
-        Button(
+        ExpressiveButton(
             onClick = onDismiss,
             modifier = Modifier.fillMaxWidth().height(50.dp),
-            shape = RoundedCornerShape(10.dp),
+            shape = MaterialTheme.shapes.medium,
         ) {
             Text("Show results", fontWeight = FontWeight.Bold)
         }

@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -30,13 +29,10 @@ import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -61,6 +57,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveSwitch
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.playback.SubtitleDelay
 import com.miruronative.ui.adaptive.LocalAppDeviceProfile
 import com.miruronative.ui.adaptive.focusHighlight
@@ -80,8 +81,6 @@ internal data class PlayerQualityOption(
     val selected: Boolean,
     val onSelect: () -> Unit,
 )
-
-private val SheetColor = Color(0xFF1B1B1F)
 
 /**
  * The player's general playback settings. Subtitle controls deliberately live in
@@ -184,7 +183,7 @@ private fun PlayerOptionsSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = SheetColor,
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         dragHandle = { BottomSheetDefaults.DragHandle() },
     ) {
         Column(
@@ -195,7 +194,7 @@ private fun PlayerOptionsSheet(
         ) {
             Text(
                 title,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleLarge,
             )
@@ -223,7 +222,13 @@ private fun SheetSections(
     onEnterPip: (() -> Unit)?,
 ) {
     SectionLabel("Volume")
-    MediaVolumeSlider(modifier = Modifier.fillMaxWidth(), showPercentLabel = true)
+    MediaVolumeSlider(
+        modifier = Modifier.fillMaxWidth(),
+        showPercentLabel = true,
+        sliderColors = SliderDefaults.colors(),
+        iconTint = MaterialTheme.colorScheme.onSurfaceVariant,
+        labelTint = MaterialTheme.colorScheme.onSurface,
+    )
 
     speed?.let { current ->
         SectionLabel("Playback Speed")
@@ -241,7 +246,7 @@ private fun SheetSections(
             Text(
                 text = message,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.68f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
             )
         }
@@ -271,7 +276,7 @@ private fun SheetSections(
             Text(
                 status.playerMessage,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.62f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 16.dp, end = 12.dp, bottom = 6.dp),
             )
         }
@@ -294,7 +299,7 @@ private fun CaptionSections(
         Text(
             text = emptyTrackMessage,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.68f),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
     } else {
@@ -318,7 +323,7 @@ private fun CaptionSections(
                     "Each episode will use its own provider timing."
                 },
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.White.copy(alpha = 0.62f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 16.dp, end = 12.dp, bottom = 6.dp),
             )
         }
@@ -357,7 +362,7 @@ private fun TvSettingsPanel(
                 .align(Alignment.CenterEnd)
                 .fillMaxHeight()
                 .width(420.dp)
-                .background(SheetColor)
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                 // Keep the remote inside the panel; Back and the close button leave it.
                 .focusProperties { exit = { FocusRequester.Cancel } }
                 .focusGroup()
@@ -372,17 +377,17 @@ private fun TvSettingsPanel(
             ) {
                 Text(
                     title,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
                 )
-                IconButton(
+                ExpressiveIconButton(
                     onClick = onDismiss,
                     modifier = Modifier
                         .focusRequester(initialFocus)
-                        .focusHighlight(RoundedCornerShape(24.dp)),
+                        .focusHighlight(MaterialTheme.shapes.extraLarge),
                 ) {
-                    Icon(Icons.Default.Close, contentDescription = closeDescription, tint = Color.White)
+                    Icon(Icons.Default.Close, contentDescription = closeDescription, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
             content()
@@ -399,13 +404,12 @@ private fun SpeedSlider(speed: Float, onSpeedChange: (Float) -> Unit) {
             ?: speeds.indexOfFirst { it == 1f }.coerceAtLeast(0)
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(Icons.Default.Speed, contentDescription = null, tint = Color.White)
+        Icon(Icons.Default.Speed, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Slider(
             value = index.toFloat(),
             onValueChange = { onSpeedChange(speeds[it.roundToInt().coerceIn(0, speeds.lastIndex)]) },
             valueRange = 0f..speeds.lastIndex.toFloat(),
             steps = (speeds.size - 2).coerceAtLeast(0),
-            colors = whiteSliderColors(),
             modifier = Modifier
                 .weight(1f)
                 .padding(horizontal = 10.dp)
@@ -430,7 +434,7 @@ private fun SpeedSlider(speed: Float, onSpeedChange: (Float) -> Unit) {
         )
         Text(
             speed.formatPlaybackSpeed(),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.widthIn(min = 40.dp),
         )
@@ -451,10 +455,11 @@ private fun SectionLabel(text: String) {
 private fun ChoiceChip(label: String, selected: Boolean, onClick: () -> Unit) {
     Box(
         Modifier
-            .focusHighlight(RoundedCornerShape(8.dp))
-            .clip(RoundedCornerShape(8.dp))
+            .focusHighlight(MaterialTheme.shapes.small)
+            .clip(MaterialTheme.shapes.small)
             .background(
-                if (selected) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.08f),
+                if (selected) MaterialTheme.colorScheme.primary
+                else MaterialTheme.colorScheme.surfaceContainerHighest,
             )
             // Radio semantics so TalkBack announces "selected" and reads it as a choice.
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
@@ -462,7 +467,7 @@ private fun ChoiceChip(label: String, selected: Boolean, onClick: () -> Unit) {
     ) {
         Text(
             label,
-            color = if (selected) MaterialTheme.colorScheme.onPrimary else Color.White,
+            color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelLarge,
         )
     }
@@ -473,7 +478,7 @@ private fun TrackRow(label: String, selected: Boolean, onSelect: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .focusHighlight(RoundedCornerShape(8.dp))
+            .focusHighlight(MaterialTheme.shapes.small)
             // Radio semantics carry the selection state, so the check icon is decorative.
             .selectable(selected = selected, role = Role.RadioButton, onClick = onSelect)
             .padding(vertical = 10.dp),
@@ -482,7 +487,7 @@ private fun TrackRow(label: String, selected: Boolean, onSelect: () -> Unit) {
     ) {
         Text(
             label,
-            color = if (selected) MaterialTheme.colorScheme.primary else Color.White,
+            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyLarge,
         )
         if (selected) {
@@ -500,7 +505,7 @@ private fun ToggleRow(label: String, checked: Boolean, onCheckedChange: (Boolean
     Row(
         Modifier
             .fillMaxWidth()
-            .focusHighlight(RoundedCornerShape(8.dp))
+            .focusHighlight(MaterialTheme.shapes.small)
             // One toggleable row (the inner Switch is display-only) so TalkBack reads
             // "<label>, switch, on/off" as a single stop instead of two half-described ones.
             .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange)
@@ -508,15 +513,8 @@ private fun ToggleRow(label: String, checked: Boolean, onCheckedChange: (Boolean
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, color = Color.White, style = MaterialTheme.typography.bodyLarge)
-        Switch(
-            checked = checked,
-            onCheckedChange = null,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                checkedTrackColor = MaterialTheme.colorScheme.primary,
-            ),
-        )
+        Text(label, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.bodyLarge)
+        ExpressiveSwitch(checked = checked, onCheckedChange = null)
     }
 }
 
@@ -535,7 +533,7 @@ private fun SubtitleDelayRow(delayMs: Long, onChange: (Long) -> Unit) {
         ChoiceChip("−0.25s", false) { onChange(delayMs - SubtitleDelay.STEP_MS) }
         Text(
             if (delayMs == 0L) "0.00 s" else String.format(Locale.US, "%+.2f s", delayMs / 1000.0),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.bodyLarge,
         )
         ChoiceChip("+0.25s", false) { onChange(delayMs + SubtitleDelay.STEP_MS) }
@@ -549,7 +547,7 @@ private fun SubtitleDelayRow(delayMs: Long, onChange: (Long) -> Unit) {
             delayMs > 0L -> "Subtitles are held back."
             else -> "Subtitles run ahead."
         },
-        color = Color.White.copy(alpha = 0.6f),
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         style = MaterialTheme.typography.bodySmall,
     )
 }
@@ -559,12 +557,12 @@ private fun ClickableRow(label: String, onClick: () -> Unit) {
     Row(
         Modifier
             .fillMaxWidth()
-            .focusHighlight(RoundedCornerShape(8.dp))
+            .focusHighlight(MaterialTheme.shapes.small)
             .clickable(role = Role.Button, onClick = onClick)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, color = Color.White, style = MaterialTheme.typography.bodyLarge)
+        Text(label, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.bodyLarge)
     }
 }
 

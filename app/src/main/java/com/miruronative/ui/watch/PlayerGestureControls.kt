@@ -1,4 +1,8 @@
 package com.miruronative.ui.watch
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 
 import android.app.Activity
 import android.content.Context
@@ -20,7 +24,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeDown
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
@@ -31,9 +34,9 @@ import androidx.compose.material.icons.filled.FastRewind
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -290,7 +293,7 @@ internal fun PlayerGestureControls(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(top = 24.dp)
-                    .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(18.dp))
+                    .background(Color.Black.copy(alpha = 0.6f), MaterialTheme.shapes.large)
                     .padding(horizontal = 14.dp, vertical = 7.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -344,7 +347,7 @@ internal fun PlaybackGestureIndicator(isPlaying: Boolean, modifier: Modifier = M
     Box(
         modifier = modifier
             .size(76.dp)
-            .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(38.dp)),
+            .background(Color.Black.copy(alpha = 0.6f), MaterialTheme.shapes.extraLarge),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -360,7 +363,7 @@ internal fun PlaybackGestureIndicator(isPlaying: Boolean, modifier: Modifier = M
 private fun GestureLevelIndicator(level: GestureLevel, modifier: Modifier = Modifier) {
     Column(
         modifier
-            .background(Color.Black.copy(alpha = 0.6f), RoundedCornerShape(14.dp))
+            .background(Color.Black.copy(alpha = 0.6f), MaterialTheme.shapes.medium)
             .padding(horizontal = 18.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -376,7 +379,7 @@ private fun GestureLevelIndicator(level: GestureLevel, modifier: Modifier = Modi
             Modifier
                 .width(6.dp)
                 .height(120.dp)
-                .clip(RoundedCornerShape(3.dp))
+                .clip(MaterialTheme.shapes.extraSmall)
                 .background(Color.White.copy(alpha = 0.25f)),
             contentAlignment = Alignment.BottomCenter,
         ) {
@@ -384,7 +387,7 @@ private fun GestureLevelIndicator(level: GestureLevel, modifier: Modifier = Modi
                 Modifier
                     .fillMaxWidth()
                     .fillMaxHeight(level.fraction)
-                    .clip(RoundedCornerShape(3.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(Color.White),
             )
         }
@@ -402,7 +405,7 @@ private fun SeekGestureIndicator(seek: SeekGesture, modifier: Modifier = Modifie
     val forward = seek.deltaMs >= 0L
     Column(
         modifier = modifier
-            .background(Color.Black.copy(alpha = 0.68f), RoundedCornerShape(14.dp))
+            .background(Color.Black.copy(alpha = 0.68f), MaterialTheme.shapes.medium)
             .padding(horizontal = 20.dp, vertical = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -454,6 +457,9 @@ internal fun MediaVolumeSlider(
     modifier: Modifier = Modifier,
     showPercentLabel: Boolean = false,
     onInteract: () -> Unit = {},
+    sliderColors: SliderColors = whiteSliderColors(),
+    iconTint: Color = Color.White,
+    labelTint: Color = Color.White,
 ) {
     val context = LocalContext.current
     val audioManager = remember(context) {
@@ -473,7 +479,7 @@ internal fun MediaVolumeSlider(
     }
 
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        IconButton(
+        ExpressiveIconButton(
             onClick = {
                 lastInteractMs = System.currentTimeMillis()
                 if (volume > 0.001f) {
@@ -488,7 +494,7 @@ internal fun MediaVolumeSlider(
                 onInteract()
             },
         ) {
-            Icon(volumeIcon(volume), contentDescription = if (volume > 0.001f) "Mute" else "Unmute", tint = Color.White)
+            Icon(volumeIcon(volume), contentDescription = if (volume > 0.001f) "Mute" else "Unmute", tint = iconTint)
         }
         Slider(
             value = volume,
@@ -498,7 +504,7 @@ internal fun MediaVolumeSlider(
                 applyVolume(audioManager, it)
                 onInteract()
             },
-            colors = whiteSliderColors(),
+            colors = sliderColors,
             modifier = Modifier
                 .weight(1f)
                 .semantics { contentDescription = "Volume" }
@@ -527,7 +533,7 @@ internal fun MediaVolumeSlider(
         if (showPercentLabel) {
             Text(
                 "${(volume * 100).roundToInt()}%",
-                color = Color.White,
+                color = labelTint,
                 style = MaterialTheme.typography.labelLarge,
                 modifier = Modifier.padding(start = 10.dp).widthIn(min = 44.dp),
             )

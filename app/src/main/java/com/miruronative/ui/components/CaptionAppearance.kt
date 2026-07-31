@@ -16,7 +16,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -136,10 +135,10 @@ fun CaptionAppearanceDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = onDismiss) { Text("Close") }
+            ExpressiveTextButton(onClick = onDismiss) { Text("Close") }
         },
         dismissButton = {
-            TextButton(onClick = SettingsStore::resetCaptionStyle) { Text("Reset") }
+            ExpressiveTextButton(onClick = SettingsStore::resetCaptionStyle) { Text("Reset") }
         },
     )
 }
@@ -149,7 +148,7 @@ private fun CaptionPreview(style: CaptionStyle, modifier: Modifier = Modifier) {
     Box(
         modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(MaterialTheme.shapes.small)
             // Stands in for video: a flat swatch would hide what a translucent background does.
             .background(Brush.linearGradient(listOf(Color(0xFF3A4E6B), Color(0xFF0E1116))))
             .heightIn(min = 120.dp)
@@ -211,7 +210,7 @@ private fun <T> CaptionChoiceRow(
                     selected = option == selected,
                     onClick = { onSelect(option) },
                     label = { Text(labelOf(option)) },
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                    modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                 )
             }
         }

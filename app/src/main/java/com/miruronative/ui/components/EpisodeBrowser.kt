@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ViewList
@@ -25,7 +24,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -169,9 +167,9 @@ internal fun EpisodeBlockPicker(
     Box {
         Row(
             modifier = Modifier
-                .focusHighlight(RoundedCornerShape(10.dp))
-                .clip(RoundedCornerShape(10.dp))
-                .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
+                .focusHighlight(MaterialTheme.shapes.medium)
+                .clip(MaterialTheme.shapes.medium)
+                .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
                 .clickable(onClickLabel = "Choose episode range") { expanded = true }
                 .padding(start = 14.dp, end = 6.dp, top = 12.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -235,7 +233,7 @@ private fun EpisodeFilterField(
             decorationBox = { innerTextField ->
                 Row(
                     modifier = Modifier
-                        .border(1.dp, colors.outline, RoundedCornerShape(10.dp))
+                        .border(1.dp, colors.outline, MaterialTheme.shapes.medium)
                         .padding(start = 10.dp, end = 4.dp, top = 10.dp, bottom = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -263,7 +261,7 @@ private fun EpisodeFilterField(
                         // The glyph stays 20dp to suit the compact field, but the touch target
                         // has to stay a real one — a bare 20dp clickable Icon is well under the
                         // 48dp minimum and is genuinely hard to hit.
-                        IconButton(
+                        ExpressiveIconButton(
                             onClick = { onQueryChange("") },
                             modifier = Modifier.size(36.dp),
                         ) {
@@ -284,9 +282,9 @@ private fun EpisodeFilterField(
 @Composable
 private fun EpisodeLayoutToggle(layout: EpisodeLayout, onToggle: () -> Unit) {
     val showsGridNext = layout == EpisodeLayout.LIST
-    IconButton(
+    ExpressiveIconButton(
         onClick = onToggle,
-        modifier = Modifier.focusHighlight(RoundedCornerShape(10.dp)),
+        modifier = Modifier.focusHighlight(MaterialTheme.shapes.medium),
     ) {
         // The glyph shows the layout the press switches TO, which is how view toggles are read.
         Icon(
@@ -328,14 +326,14 @@ fun EpisodeNumberChip(
                     true
                 }
             }
-            .focusHighlight(RoundedCornerShape(8.dp))
+            .focusHighlight(MaterialTheme.shapes.small)
             .height(44.dp)
-            .clip(RoundedCornerShape(8.dp))
+            .clip(MaterialTheme.shapes.small)
             .background(background)
             .border(
                 1.dp,
                 if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
-                RoundedCornerShape(8.dp),
+                MaterialTheme.shapes.small,
             )
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,

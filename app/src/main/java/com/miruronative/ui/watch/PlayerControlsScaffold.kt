@@ -1,4 +1,8 @@
 package com.miruronative.ui.watch
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +24,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
@@ -81,7 +84,7 @@ internal fun PlayerControlsScaffold(
         ) {
             PlayerControlIconButton("Previous episode", Icons.Default.SkipPrevious, enabled = hasPrevious, onClick = onPrevious)
             PlayerControlIconButton("Rewind 10 seconds", Icons.Default.FastRewind, onClick = onRewind)
-            IconButton(
+            ExpressiveIconButton(
                 onClick = onPlayPause,
                 modifier = Modifier
                     .size(64.dp)
@@ -150,7 +153,7 @@ internal fun PlayerControlIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    IconButton(
+    ExpressiveIconButton(
         onClick = onClick,
         enabled = enabled,
         modifier = modifier.semantics { contentDescription = label },

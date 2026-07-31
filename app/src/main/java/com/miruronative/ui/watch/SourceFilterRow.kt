@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +51,7 @@ fun SourceFilterRow(
                     selected = audio == option,
                     onClick = { onAudioChange(option) },
                     label = { Text(option.label) },
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                    modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                 )
             }
         }
@@ -89,7 +88,7 @@ fun SourceFilterRow(
                     selected = language == null,
                     onClick = { onLanguageChange(null) },
                     label = { Text("Any") },
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                    modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                 )
                 languages.forEach { option ->
                     FilterChip(
@@ -98,7 +97,7 @@ fun SourceFilterRow(
                         label = { Text(option) },
                         modifier = Modifier
                             .padding(end = 0.dp)
-                            .focusHighlight(RoundedCornerShape(20.dp)),
+                            .focusHighlight(MaterialTheme.shapes.large),
                     )
                 }
             }

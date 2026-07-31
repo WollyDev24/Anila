@@ -41,18 +41,14 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -92,6 +88,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.R
 import com.miruronative.data.library.HistoryEntry
 import com.miruronative.data.library.LibraryStore
@@ -212,7 +212,7 @@ fun HomeScreen(
                 },
                 actions = {
                     val unread by com.miruronative.data.reminder.NotificationCenter.unread.collectAsState()
-                    IconButton(
+                    ExpressiveIconButton(
                         onClick = onNotificationsClick,
                         modifier = Modifier.focusHighlight(CircleShape),
                     ) {
@@ -231,7 +231,7 @@ fun HomeScreen(
                             )
                         }
                     }
-                    IconButton(
+                    ExpressiveIconButton(
                         onClick = onSearchClick,
                         modifier = Modifier.focusHighlight(CircleShape),
                     ) {
@@ -311,10 +311,10 @@ private fun StartupStillLoading(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                TextButton(onClick = onRetry, modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp))) {
+                ExpressiveTextButton(onClick = onRetry, modifier = Modifier.focusHighlight(MaterialTheme.shapes.large)) {
                     Text("Retry")
                 }
-                Button(onClick = onShareDiagnostics, modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp))) {
+                ExpressiveButton(onClick = onShareDiagnostics, modifier = Modifier.focusHighlight(MaterialTheme.shapes.large)) {
                     Text("Send diagnostics")
                 }
             }
@@ -439,7 +439,7 @@ private fun HomeContent(
                                 .padding(vertical = 4.dp),
                             contentAlignment = Alignment.Center,
                         ) {
-                            OutlinedButton(
+                            ExpressiveOutlinedButton(
                                 onClick = {
                                     if (canReveal) {
                                         visibleLimit += initialBatch
@@ -452,8 +452,8 @@ private fun HomeContent(
                                     }
                                 },
                                 enabled = !isLoadingMore,
-                                shape = RoundedCornerShape(20.dp),
-                                modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                                shape = MaterialTheme.shapes.large,
+                                modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                             ) {
                                 if (isLoadingMore) {
                                     CircularProgressIndicator(
@@ -548,7 +548,7 @@ private fun HomeCatalogTabs(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = device.pagePadding)
-            .clip(RoundedCornerShape(9.dp))
+            .clip(MaterialTheme.shapes.small)
             .background(MaterialTheme.colorScheme.surface)
             .padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -558,8 +558,8 @@ private fun HomeCatalogTabs(
             Box(
                 Modifier
                     .weight(1f)
-                    .focusHighlight(RoundedCornerShape(7.dp))
-                    .clip(RoundedCornerShape(7.dp))
+                    .focusHighlight(MaterialTheme.shapes.extraSmall)
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(if (active) MaterialTheme.colorScheme.primary.copy(alpha = .24f) else Color.Transparent)
                     .clickable { onSelect(tab) }
                     .padding(vertical = 9.dp),
@@ -635,7 +635,7 @@ private fun HeroPager(
             .fillMaxWidth()
             .padding(horizontal = if (device.isTv) device.pagePadding else 0.dp)
             .height(heroHeight)
-            .clip(if (device.isTv) RoundedCornerShape(18.dp) else RoundedCornerShape(0.dp)),
+            .clip(if (device.isTv) MaterialTheme.shapes.large else RoundedCornerShape(0.dp)),
     ) {
         if (device.isTv) {
             val page = safeTvPage
@@ -808,9 +808,9 @@ private fun HeroCard(
                 Modifier.padding(top = 18.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                OutlinedButton(
+                ExpressiveOutlinedButton(
                     onClick = { onAnimeClick(media.id) },
-                    shape = RoundedCornerShape(24.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = Color.Black.copy(.35f),
                         contentColor = Color.White,
@@ -841,14 +841,14 @@ private fun HeroCard(
                                 false
                             }
                         }
-                        .focusHighlight(RoundedCornerShape(24.dp)),
+                        .focusHighlight(MaterialTheme.shapes.extraLarge),
                 ) {
                     Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(18.dp))
                     Text("Details", Modifier.padding(start = 6.dp), fontWeight = FontWeight.SemiBold)
                 }
-                Button(
+                ExpressiveButton(
                     onClick = { onWatchNow(media.id) },
-                    shape = RoundedCornerShape(24.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
                     colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color.Black),
                     modifier = Modifier
                         .focusRequester(playFocusRequester)
@@ -876,7 +876,7 @@ private fun HeroCard(
                                 false
                             }
                         }
-                        .focusHighlight(RoundedCornerShape(24.dp)),
+                        .focusHighlight(MaterialTheme.shapes.extraLarge),
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(20.dp))
                     Text("Watch Now", Modifier.padding(start = 6.dp), fontWeight = FontWeight.Bold)
@@ -1010,9 +1010,9 @@ private fun MediaRail(
                 fontWeight = FontWeight.Bold,
             )
             if (onToggleExpand != null) {
-                TextButton(
+                ExpressiveTextButton(
                     onClick = onToggleExpand,
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(8.dp)),
+                    modifier = Modifier.focusHighlight(MaterialTheme.shapes.small),
                 ) {
                     Icon(
                         if (isExpanded) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
@@ -1058,10 +1058,10 @@ private fun MediaRail(
                             .padding(vertical = 12.dp),
                         contentAlignment = Alignment.Center,
                     ) {
-                        OutlinedButton(
+                        ExpressiveOutlinedButton(
                             onClick = onLoadMore,
-                            shape = RoundedCornerShape(20.dp),
-                            modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                            shape = MaterialTheme.shapes.large,
+                            modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                         ) {
                             Text("Load More Trending Anime", fontWeight = FontWeight.Bold)
                         }
@@ -1087,8 +1087,8 @@ private fun MediaRail(
                             modifier = Modifier
                                 .height(cardWidth * 1.4f)
                                 .width(cardWidth * 0.85f)
-                                .focusHighlight(RoundedCornerShape(12.dp))
-                                .clip(RoundedCornerShape(12.dp))
+                                .focusHighlight(MaterialTheme.shapes.medium)
+                                .clip(MaterialTheme.shapes.medium)
                                 .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                 .clickable { onLoadMore() },
                             contentAlignment = Alignment.Center,
@@ -1164,7 +1164,7 @@ private fun ContinueRail(
                             onLongClick = { managedEntry = entry },
                         ),
                 ) {
-                    Box(Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.surfaceVariant)) {
+                    Box(Modifier.fillMaxWidth().aspectRatio(16f / 9f).clip(MaterialTheme.shapes.medium).background(MaterialTheme.colorScheme.surfaceVariant)) {
                         AsyncImage(model = entry.cover, contentDescription = "Resume ${entry.title}", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
                         Box(Modifier.fillMaxSize().background(Color.Black.copy(.3f)))
                         Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.align(Alignment.Center))

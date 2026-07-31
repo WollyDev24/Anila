@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Check
@@ -27,7 +26,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -148,12 +146,12 @@ fun AnimeListStatusDialog(
                 Modifier
                     .widthIn(max = 620.dp)
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(18.dp))
+                    .clip(MaterialTheme.shapes.large)
                     .background(MaterialTheme.colorScheme.surface)
                     .border(
                         1.dp,
                         MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                        RoundedCornerShape(18.dp),
+                        MaterialTheme.shapes.large,
                     )
                     .padding(24.dp),
             )
@@ -250,7 +248,7 @@ private fun AnimeListStatusContent(
         }
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-            TextButton(onClick = onClose, enabled = busyStatus == null) { Text("Close") }
+            ExpressiveTextButton(onClick = onClose, enabled = busyStatus == null) { Text("Close") }
         }
     }
 }
@@ -264,7 +262,7 @@ private fun AnimeListStatusCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = RoundedCornerShape(28.dp)
+    val shape = MaterialTheme.shapes.extraLarge
     val accent = animeListStatusAccent(option.status)
     Row(
         modifier = modifier

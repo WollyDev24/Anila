@@ -32,7 +32,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -83,6 +82,10 @@ import androidx.mediarouter.app.MediaRouteChooserDialogFragment
 import androidx.mediarouter.app.MediaRouteControllerDialog
 import androidx.mediarouter.app.MediaRouteControllerDialogFragment
 import androidx.mediarouter.app.MediaRouteDialogFactory
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.R
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
@@ -1295,7 +1298,7 @@ fun PlayerSurface(
             } else {
                 Modifier.align(Alignment.BottomStart).padding(start = edgeInset, bottom = edgeInset)
             }
-            OutlinedButton(
+            ExpressiveOutlinedButton(
                 onClick = onClick,
                 shape = RoundedCornerShape(3.dp),
                 border = BorderStroke(1.dp, Color.White.copy(alpha = 0.55f)),
@@ -1391,7 +1394,7 @@ private fun CastButton(modifier: Modifier = Modifier) {
             },
         )
     } else {
-        androidx.compose.material3.IconButton(
+        com.miruronative.ui.components.ExpressiveIconButton(
             onClick = { openSystemCastPicker(context) },
             modifier = modifier,
         ) {

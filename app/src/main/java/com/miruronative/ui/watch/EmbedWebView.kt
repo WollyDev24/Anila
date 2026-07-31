@@ -45,7 +45,6 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -79,6 +78,10 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.webkit.WebViewCompat
 import androidx.webkit.WebViewFeature
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.model.EpisodeItem
 import com.miruronative.data.model.SkipTimes
 import com.miruronative.data.model.hasUsableWindow
@@ -1233,7 +1236,7 @@ private fun allAnimeIframeShell(url: String): String {
 
 @Composable
 private fun WebSkipButton(label: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    OutlinedButton(
+    ExpressiveOutlinedButton(
         onClick = onClick,
         shape = RoundedCornerShape(3.dp),
         border = BorderStroke(1.dp, Color.White.copy(alpha = 0.55f)),

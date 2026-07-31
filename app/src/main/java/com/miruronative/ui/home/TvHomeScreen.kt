@@ -30,16 +30,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -69,6 +66,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.R
 import com.miruronative.data.library.HistoryEntry
 import com.miruronative.data.library.LibraryStore
@@ -85,7 +86,6 @@ import kotlin.math.abs
 private val TvPagePadding = 48.dp
 internal val TvMediaCardWidth = 222.dp
 private val TvRailCardWidth = TvMediaCardWidth
-private val TvCardShape = RoundedCornerShape(12.dp)
 private const val TV_HERO_AUTO_ADVANCE_MS = 7_000L
 
 /**
@@ -355,9 +355,9 @@ private fun TvHero(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Button(
+                ExpressiveButton(
                     onClick = { onWatchNow(media.id) },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         contentColor = Color.Black,
@@ -366,7 +366,7 @@ private fun TvHero(
                     modifier = Modifier
                         .tvFocusTarget(primaryActionFocusTarget)
                         .onFocusChanged { onFocusChanged(it.hasFocus) }
-                        .focusHighlight(RoundedCornerShape(12.dp), focusedScale = 1.04f),
+                        .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.04f),
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(21.dp))
                     Text(
@@ -375,9 +375,9 @@ private fun TvHero(
                         modifier = Modifier.padding(start = 7.dp),
                     )
                 }
-                OutlinedButton(
+                ExpressiveOutlinedButton(
                     onClick = { onAnimeClick(media.id) },
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = Color.Black.copy(.44f),
                         contentColor = Color.White,
@@ -385,7 +385,7 @@ private fun TvHero(
                     contentPadding = PaddingValues(horizontal = 18.dp, vertical = 10.dp),
                     modifier = Modifier
                         .onFocusChanged { onFocusChanged(it.hasFocus) }
-                        .focusHighlight(RoundedCornerShape(12.dp), focusedScale = 1.04f),
+                        .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.04f),
                 ) {
                     Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(19.dp))
                     Text("More info", fontWeight = FontWeight.SemiBold, modifier = Modifier.padding(start = 7.dp))
@@ -544,12 +544,12 @@ internal fun TvMediaCard(
             Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(TvCardShape)
+                .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .border(
                     width = if (focused) 3.dp else 1.dp,
                     color = if (focused) MaterialTheme.colorScheme.primary else Color.White.copy(.08f),
-                    shape = TvCardShape,
+                    shape = MaterialTheme.shapes.small,
                 ),
         ) {
             AsyncImage(
@@ -571,7 +571,7 @@ internal fun TvMediaCard(
                     Modifier
                         .align(Alignment.BottomEnd)
                         .padding(7.dp)
-                        .clip(RoundedCornerShape(6.dp))
+                        .clip(MaterialTheme.shapes.extraSmall)
                         .background(Color.Black.copy(.72f))
                         .padding(horizontal = 7.dp, vertical = 3.dp),
                     verticalAlignment = Alignment.CenterVertically,
@@ -704,12 +704,12 @@ private fun TvContinueCard(
             Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(TvCardShape)
+                .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .border(
                     width = if (focused) 3.dp else 1.dp,
                     color = if (focused) MaterialTheme.colorScheme.primary else Color.White.copy(.08f),
-                    shape = TvCardShape,
+                    shape = MaterialTheme.shapes.small,
                 ),
         ) {
             AsyncImage(
@@ -723,7 +723,7 @@ private fun TvContinueCard(
                 Modifier
                     .align(Alignment.TopEnd)
                     .padding(7.dp)
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(Color.Black.copy(.74f))
                     .padding(horizontal = 8.dp, vertical = 4.dp),
             ) {

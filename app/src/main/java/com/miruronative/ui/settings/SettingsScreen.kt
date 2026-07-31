@@ -8,44 +8,57 @@ import android.net.Uri
 import android.os.Build
 import android.provider.OpenableColumns
 import android.text.format.Formatter
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.res.painterResource
-import com.miruronative.R
-import com.miruronative.BuildConfig
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ClosedCaption
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.DeleteSweep
 import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RecordVoiceOver
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SystemUpdate
+import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -61,16 +74,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.miruronative.data.auth.AuthManager
+import com.miruronative.BuildConfig
+import com.miruronative.R
+import com.miruronative.data.ProviderCatalog
 import com.miruronative.data.auth.AccountService
+import com.miruronative.data.auth.AuthManager
 import com.miruronative.data.auth.MalAuthManager
 import com.miruronative.data.cache.CacheManager
 import com.miruronative.data.library.LibraryStore
@@ -78,18 +97,17 @@ import com.miruronative.data.library.MalExportFile
 import com.miruronative.data.library.MalImport
 import com.miruronative.data.reminder.AutomaticReleaseManager
 import com.miruronative.data.reminder.ReleaseSyncScheduler
-import com.miruronative.data.ProviderCatalog
 import com.miruronative.data.settings.DEFAULT_PREFERRED_PROVIDER
 import com.miruronative.data.settings.DefaultQuality
 import com.miruronative.data.settings.DownloadDestination
 import com.miruronative.data.settings.DownloadQuality
 import com.miruronative.data.settings.MAX_SERVER_PRIORITY
-import com.miruronative.data.settings.SettingsStore
 import com.miruronative.data.settings.MenuLanguage
+import com.miruronative.data.settings.SettingsStore
 import com.miruronative.data.update.UpdateManager
-import com.miruronative.diagnostics.DiagnosticTrigger
 import com.miruronative.diagnostics.DiagnosticSendResult
 import com.miruronative.diagnostics.DiagnosticSubmissionDialog
+import com.miruronative.diagnostics.DiagnosticTrigger
 import com.miruronative.diagnostics.DiagnosticsLog
 import com.miruronative.diagnostics.DiagnosticsUploadManager
 import com.miruronative.ui.UiState
@@ -97,6 +115,9 @@ import com.miruronative.ui.adaptive.LocalAppDeviceProfile
 import com.miruronative.ui.adaptive.focusHighlight
 import com.miruronative.ui.adaptive.rememberScreenReaderActive
 import com.miruronative.ui.components.CaptionAppearanceDialog
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveSwitch
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.ui.components.LocalAppChromeBottomInset
 import com.miruronative.ui.components.ScrollAwareTopBar
 import com.miruronative.ui.profile.AniListProfile
@@ -159,13 +180,11 @@ fun SettingsScreen(
     var cacheUsage by remember { mutableStateOf<Long?>(null) }
     var cacheClearing by remember { mutableStateOf(false) }
     var cacheMessage by remember { mutableStateOf<String?>(null) }
-    // Only the first group opens by default: the page is long enough that showing every row at
-    // once is what made it hard to scan, and on a remote it is a lot of rows to travel past.
-    var expandedSections by rememberSaveable { mutableStateOf(listOf("Playback")) }
-    fun toggleSection(name: String) {
-        expandedSections =
-            if (name in expandedSections) expandedSections - name else expandedSections + name
-    }
+    var selectedCategory by rememberSaveable { mutableStateOf<SettingsTab?>(null) }
+    var defaultQualityDialog by remember { mutableStateOf(false) }
+    var downloadQualityDialog by remember { mutableStateOf(false) }
+    var downloadDestinationDialog by remember { mutableStateOf(false) }
+    var menuLanguageDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(token, malLoggedIn) { vm.loadIfLoggedIn() }
     LaunchedEffect(Unit) {
@@ -214,6 +233,54 @@ fun SettingsScreen(
                     }
                 }
             },
+        )
+    }
+
+    if (defaultQualityDialog) {
+        SettingsRadioDialog(
+            title = "Default quality",
+            options = DefaultQuality.entries.toList(),
+            selected = defaultQuality,
+            label = { it.label },
+            onSelect = SettingsStore::setDefaultQuality,
+            onDismiss = { defaultQualityDialog = false },
+        )
+    }
+    if (downloadQualityDialog) {
+        SettingsRadioDialog(
+            title = "Default download resolution",
+            options = DownloadQuality.entries.toList(),
+            selected = downloadQuality,
+            label = { it.label },
+            onSelect = SettingsStore::setDownloadQuality,
+            onDismiss = { downloadQualityDialog = false },
+        )
+    }
+    if (downloadDestinationDialog) {
+        SettingsRadioDialog(
+            title = "Default download destination",
+            options = DownloadDestination.entries.toList(),
+            selected = downloadDestination,
+            label = { it.label },
+            onSelect = SettingsStore::setDownloadDestination,
+            onDismiss = { downloadDestinationDialog = false },
+        )
+    }
+    if (menuLanguageDialog) {
+        val spanish = menuLanguage.usesSpanish()
+        SettingsRadioDialog(
+            title = if (spanish) "Idioma del menú" else "Menu language",
+            options = MenuLanguage.entries.toList(),
+            selected = menuLanguage,
+            label = { language ->
+                when (language) {
+                    MenuLanguage.SYSTEM -> if (spanish) "Sistema" else "System"
+                    MenuLanguage.ENGLISH -> if (spanish) "Inglés" else "English"
+                    MenuLanguage.SPANISH -> "Español"
+                }
+            },
+            onSelect = SettingsStore::setMenuLanguage,
+            onDismiss = { menuLanguageDialog = false },
         )
     }
 
@@ -395,414 +462,489 @@ fun SettingsScreen(
         }
     }
 
+    val spanish = menuLanguage.usesSpanish()
+    val categoryTitles = mapOf(
+        SettingsTab.Playback to (if (spanish) "Reproducción" else "Playback"),
+        SettingsTab.Servers to (if (spanish) "Servidores" else "Servers"),
+        SettingsTab.Downloads to (if (spanish) "Descargas" else "Downloads"),
+        SettingsTab.Content to (if (spanish) "Contenido" else "Content"),
+        SettingsTab.ListSync to (if (spanish) "Sincronización" else "List sync"),
+        SettingsTab.Notifications to (if (spanish) "Notificaciones" else "Notifications"),
+        SettingsTab.Data to (if (spanish) "Datos" else "Data"),
+        SettingsTab.App to (if (spanish) "Aplicación" else "App"),
+        SettingsTab.About to (if (spanish) "Acerca de" else "About"),
+        SettingsTab.Accessibility to (if (spanish) "Accesibilidad" else "Accessibility"),
+    )
+    val categoryOrder = buildList {
+        add(SettingsTab.Playback)
+        add(SettingsTab.Servers)
+        add(SettingsTab.Downloads)
+        add(SettingsTab.Content)
+        add(SettingsTab.ListSync)
+        add(SettingsTab.Notifications)
+        add(SettingsTab.Data)
+        add(SettingsTab.App)
+        add(SettingsTab.About)
+        if (device.isTv) add(SettingsTab.Accessibility)
+    }
+    BackHandler(enabled = selectedCategory != null) { selectedCategory = null }
+
     Scaffold(
         modifier = modifier,
         topBar = {
-            ScrollAwareTopBar { TopAppBar(
-                title = {
-                    Text(if (menuLanguage.usesSpanish()) "Ajustes" else "Settings", fontWeight = FontWeight.Black)
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
-            ) }
+            ScrollAwareTopBar {
+                TopAppBar(
+                    title = {
+                        Text(
+                            selectedCategory?.let { categoryTitles.getValue(it) }
+                                ?: if (spanish) "Ajustes" else "Settings",
+                            fontWeight = FontWeight.Black,
+                        )
+                    },
+                    navigationIcon = {
+                        if (selectedCategory != null) {
+                            ExpressiveIconButton(onClick = { selectedCategory = null }) {
+                                Icon(
+                                    Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = if (spanish) "Volver" else "Back",
+                                )
+                            }
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
+                )
+            }
         },
     ) { padding ->
+        val category = selectedCategory
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            // Scroll padding, not layout padding: rows travel under the bars instead of the list
-            // being shunted about by them.
             contentPadding = PaddingValues(
                 start = device.pagePadding,
                 end = device.pagePadding,
                 top = padding.calculateTopPadding(),
                 bottom = padding.calculateBottomPadding() + LocalAppChromeBottomInset.current + 32.dp,
             ),
-            verticalArrangement = Arrangement.spacedBy(2.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            settingsSection(
-                title = "Playback",
-                expanded = "Playback" in expandedSections,
-                onToggle = { toggleSection("Playback") },
-            ) {
-            item { SettingSwitch("Autoplay next episode", "Continue automatically", autoplay, SettingsStore::setAutoplay) }
-            item { SettingSwitch("Auto-skip intro and outro", "Use provider skip times when available", autoSkip, SettingsStore::setAutoSkipIntroOutro) }
-            item {
-                DefaultQualitySetting(
-                    selected = defaultQuality,
-                    onSelect = SettingsStore::setDefaultQuality,
-                )
-            }
-            item { SettingSwitch("Prefer dubbed audio", "Use dub first when available", preferDub, SettingsStore::setPreferDub) }
-            item {
-                SettingSwitch(
-                    "Subtitles with dubbed audio",
-                    "Show subtitles on dubbed episodes too (applies from the next episode)",
-                    subtitlesWithDub,
-                    SettingsStore::setSubtitlesWithDub,
-                )
-            }
-            item {
-                SettingSwitch(
-                    "Player touch gestures",
-                    "Swipe the left half for brightness, the right half for volume, across for " +
-                        "seek. Tap to show the controls either way.",
-                    playerGestures,
-                    SettingsStore::setPlayerGestures,
-                )
-            }
-            item {
-                SettingsAction(
-                    title = "Caption appearance",
-                    icon = { Icon(Icons.Default.ClosedCaption, contentDescription = null) },
-                    enabled = true,
-                    onClick = { captionAppearanceVisible = true },
-                )
-            }
-            }
-
-            if (device.isTv) {
-            settingsSection(
-                title = "Accessibility",
-                expanded = "Accessibility" in expandedSections,
-                onToggle = { toggleSection("Accessibility") },
-            ) {
-                item {
-                    SettingsAction(
-                        title = "Spoken feedback: ${if (screenReaderActive) "On" else "Off"}",
-                        icon = { Icon(Icons.Default.RecordVoiceOver, contentDescription = null) },
-                        enabled = true,
-                        onClick = { openAccessibilitySettings(context) },
-                    )
-                }
-                item {
-                    Text(
-                        "Off by default. Opens Android TV Accessibility settings for viewers who want narration.",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                    )
-                }
-            }
-            }
-
-            settingsSection(
-                title = "Servers",
-                expanded = "Servers" in expandedSections,
-                onToggle = { toggleSection("Servers") },
-            ) {
-            item {
-                ServerPrioritySetting(
-                    priority = serverPriority,
-                    onChange = SettingsStore::setServerPriority,
-                )
-            }
-            }
-
-            settingsSection(
-                title = "Downloads",
-                expanded = "Downloads" in expandedSections,
-                onToggle = { toggleSection("Downloads") },
-            ) {
-            item {
-                DownloadQualitySetting(
-                    selected = downloadQuality,
-                    onSelect = SettingsStore::setDownloadQuality,
-                )
-            }
-            item {
-                DownloadDestinationSetting(
-                    selected = downloadDestination,
-                    deviceDownloadsSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q,
-                    onSelect = SettingsStore::setDownloadDestination,
-                )
-            }
-            }
-
-            settingsSection(
-                title = "Content",
-                expanded = "Content" in expandedSections,
-                onToggle = { toggleSection("Content") },
-            ) {
-            item {
-                SettingSwitch(
-                    "Blur episode images",
-                    "Hide possible spoilers. You can also tap any episode image to toggle this everywhere.",
-                    blurEpisodeImages,
-                    SettingsStore::setBlurEpisodeImages,
-                )
-            }
-            item {
-                SettingSwitch(
-                    "Hide adult content",
-                    "Keep hentai out of Home, Search, Browse, and Schedule",
-                    hideAdultContent,
-                    SettingsStore::setHideAdultContent,
-                )
-            }
-            }
-
-            settingsSection(
-                title = "List sync (AniList / MyAnimeList)",
-                expanded = "List sync (AniList / MyAnimeList)" in expandedSections,
-                onToggle = { toggleSection("List sync (AniList / MyAnimeList)") },
-            ) {
-            item {
-                SettingsAction(
-                    title = if (token != null) "Reconnect AniList" else "Sign in to AniList",
-                    description = when {
-                        token != null -> "AniList is the active list service"
-                        malLoggedIn -> "Switches list sync to AniList after sign-in succeeds"
-                        else -> "Connect lists, scores, and episode progress"
-                    },
-                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = null) },
-                    enabled = true,
-                    onClick = { loginService = AccountService.ANILIST },
-                )
-            }
-            item {
-                SettingsAction(
-                    title = if (malLoggedIn) "Reconnect MyAnimeList" else "Sign in to MyAnimeList",
-                    description = when {
-                        malLoggedIn && token == null -> "MyAnimeList is the active list service"
-                        token != null -> "Switches list sync to MyAnimeList after sign-in succeeds"
-                        else -> "Connect lists, scores, and episode progress"
-                    },
-                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = null) },
-                    enabled = true,
-                    onClick = { loginService = AccountService.MAL },
-                )
-            }
-            item { SettingSwitch("Sync episode progress", "Update watched episodes while playing", autoSync, SettingsStore::setAutoSyncAniList) }
-            item {
-                SettingSwitch(
-                    "Sync watchlist with Planning",
-                    "Import Planning after login and add new saves without replacing active progress",
-                    syncSavedToAniList,
-                    ::setWatchlistSync,
-                )
-            }
-            }
-
-            settingsSection(
-                title = "Notifications",
-                expanded = "Notifications" in expandedSections,
-                onToggle = { toggleSection("Notifications") },
-            ) {
-            item {
-                SettingSwitch(
-                    "Notification alerts",
-                    "Logged in: AniList notifications; logged out: saved anime releases",
-                    releaseNotifications,
-                    ::setReleaseNotifications,
-                )
-            }
-            }
-
-            settingsSection(
-                title = "Data",
-                expanded = "Data" in expandedSections,
-                onToggle = { toggleSection("Data") },
-            ) {
-            item {
-                SettingsAction(
-                    title = if (malExportBusy) "Preparing MyAnimeList export..." else "Export MyAnimeList XML",
-                    icon = { Icon(Icons.Default.Download, contentDescription = null) },
-                    enabled = !malExportBusy && ((token == null && !malLoggedIn) || profile != null),
-                    onClick = ::exportMal,
-                )
-            }
-            malExportMessage?.let { message ->
-                item {
-                    Text(
-                        message,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                    )
-                }
-            }
-            item {
-                SettingsAction(
-                    title = if (malImportBusy) "Cancel MyAnimeList XML import" else "Import MyAnimeList XML",
-                    description = malImportProgress?.label,
-                    icon = {
-                        Icon(
-                            if (malImportBusy) Icons.Default.Close else Icons.Default.Upload,
-                            contentDescription = null,
+            if (category == null) {
+                items(categoryOrder, key = { it.name }) { tab ->
+                    settingsCategory {
+                        categoryRow(
+                            title = categoryTitles.getValue(tab),
+                            icon = { Icon(categoryIcon(tab), contentDescription = null) },
+                            onClick = { selectedCategory = tab },
                         )
-                    },
-                    enabled = true,
-                    onClick = {
-                        if (malImportBusy) {
-                            malImportJob?.cancel()
-                        } else {
-                            malImportLauncher.launch(
-                                arrayOf("text/xml", "application/xml", "application/gzip", "application/octet-stream", "*/*"),
+                    }
+                }
+            } else {
+                when (category) {
+                    SettingsTab.Playback -> item {
+                        settingsCategory {
+                            settingRow(
+                                title = "Autoplay next episode",
+                                summary = "Continue automatically",
+                                onClick = { SettingsStore.setAutoplay(!autoplay) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = autoplay,
+                                    onCheckedChange = SettingsStore::setAutoplay,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Auto-skip intro and outro",
+                                summary = "Use provider skip times when available",
+                                onClick = { SettingsStore.setAutoSkipIntroOutro(!autoSkip) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = autoSkip,
+                                    onCheckedChange = SettingsStore::setAutoSkipIntroOutro,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Default quality",
+                                summary = "Picked automatically when an episode starts. Data Saver caps " +
+                                    "playback at 360p when possible and otherwise uses the closest " +
+                                    "available low resolution.",
+                                value = defaultQuality.label,
+                                onClick = { defaultQualityDialog = true },
+                            )
+                            rowDivider()
+                            settingRow(
+                                title = "Prefer dubbed audio",
+                                summary = "Use dub first when available",
+                                onClick = { SettingsStore.setPreferDub(!preferDub) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = preferDub,
+                                    onCheckedChange = SettingsStore::setPreferDub,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Subtitles with dubbed audio",
+                                summary = "Show subtitles on dubbed episodes too (applies from the next episode)",
+                                onClick = { SettingsStore.setSubtitlesWithDub(!subtitlesWithDub) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = subtitlesWithDub,
+                                    onCheckedChange = SettingsStore::setSubtitlesWithDub,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Player touch gestures",
+                                summary = "Swipe the left half for brightness, the right half for volume, " +
+                                    "across for seek. Tap to show the controls either way.",
+                                onClick = { SettingsStore.setPlayerGestures(!playerGestures) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = playerGestures,
+                                    onCheckedChange = SettingsStore::setPlayerGestures,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Caption appearance",
+                                icon = { Icon(Icons.Default.ClosedCaption, contentDescription = null) },
+                                onClick = { captionAppearanceVisible = true },
                             )
                         }
-                    },
-                )
-            }
-            malImportMessage?.let { message ->
-                item {
-                    Text(
-                        message,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                    )
-                }
-            }
-            item {
-                SettingsAction(
-                    title = "Clear viewing history",
-                    icon = { Icon(Icons.Default.DeleteSweep, contentDescription = null) },
-                    enabled = history.isNotEmpty(),
-                    onClick = LibraryStore::clearHistory,
-                )
-            }
-            item {
-                SettingsAction(
-                    title = cacheUsage.let { usage ->
-                        when {
-                            cacheClearing -> "Clearing cache..."
-                            usage != null -> "Clear cache (${Formatter.formatShortFileSize(context, usage)})"
-                            else -> "Clear cache"
+                    }
+                    SettingsTab.Accessibility -> if (device.isTv) item {
+                        settingsCategory {
+                            settingRow(
+                                title = "Spoken feedback",
+                                summary = "Off by default. Opens Android TV Accessibility settings for " +
+                                    "viewers who want narration.",
+                                value = if (screenReaderActive) "On" else "Off",
+                                icon = { Icon(Icons.Default.RecordVoiceOver, contentDescription = null) },
+                                onClick = { openAccessibilitySettings(context) },
+                            )
                         }
-                    },
-                    icon = { Icon(Icons.Default.Storage, contentDescription = null) },
-                    enabled = !cacheClearing && (cacheUsage ?: 0L) > 0L,
-                    onClick = ::clearCache,
-                )
-            }
-            item {
-                Text(
-                    cacheMessage
-                        ?: "Streamed video and images kept on this device for faster playback. The video cache auto-trims at 512 MB.",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                )
-            }
-            }
-
-            settingsSection(
-                title = (if (menuLanguage.usesSpanish()) "Aplicación" else "App"),
-                expanded = (if (menuLanguage.usesSpanish()) "Aplicación" else "App") in expandedSections,
-                onToggle = { toggleSection((if (menuLanguage.usesSpanish()) "Aplicación" else "App")) },
-            ) {
-            item {
-                MenuLanguageSetting(
-                    selected = menuLanguage,
-                    onSelect = SettingsStore::setMenuLanguage,
-                )
-            }
-            item {
-                SettingsAction(
-                    title = "Send diagnostics",
-                    description = if (BuildConfig.DIAGNOSTICS_UPLOAD_URL.isNotBlank()) {
-                        "Uploads a full debugging report. Passwords, cookies, tokens and sensitive links are removed."
-                    } else {
-                        "Temporarily unavailable while the private diagnostics service is being activated."
-                    },
-                    icon = { Icon(Icons.Default.Upload, contentDescription = null) },
-                    enabled = !diagnosticsBusy && BuildConfig.DIAGNOSTICS_UPLOAD_URL.isNotBlank(),
-                    onClick = {
-                        diagnosticsError = null
-                        diagnosticsDialogVisible = true
-                    },
-                )
-            }
-            diagnosticsMessage?.let { message ->
-                item {
-                    Text(
-                        message,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                    )
-                }
-            }
-            item {
-                SettingSwitch(
-                    "Check for updates on launch",
-                    "Prompt when a new version is available each time the app opens",
-                    updateCheckOnLaunch,
-                    SettingsStore::setUpdateCheckOnLaunch,
-                )
-            }
-            item {
-                SettingsAction(
-                    title = when (updateState) {
-                        is UpdateManager.State.Checking -> "Checking for updates..."
-                        is UpdateManager.State.Downloading -> "Downloading update..."
-                        else -> "Check for updates"
-                    },
-                    icon = { Icon(Icons.Default.SystemUpdate, contentDescription = null) },
-                    enabled = updateState !is UpdateManager.State.Checking &&
-                        updateState !is UpdateManager.State.Downloading,
-                    onClick = { UpdateManager.check(context, manual = true) },
-                )
-            }
-            item {
-                Text(
-                    when (val state = updateState) {
-                        is UpdateManager.State.UpToDate -> {
-                            if (state.latestPublishedVersion == UpdateManager.currentVersion) {
-                                "You're on the latest published version (v${UpdateManager.currentVersion})"
-                            } else {
-                                "Installed v${UpdateManager.currentVersion} · published v${state.latestPublishedVersion}"
+                    }
+                    SettingsTab.Servers -> item {
+                        settingsCategory {
+                            ServerPrioritySetting(
+                                priority = serverPriority,
+                                onChange = SettingsStore::setServerPriority,
+                            )
+                        }
+                    }
+                    SettingsTab.Downloads -> item {
+                        settingsCategory {
+                            settingRow(
+                                title = "Default download resolution",
+                                summary = "Limits the saved HLS rendition; direct video files keep their " +
+                                    "source resolution",
+                                value = downloadQuality.label,
+                                onClick = { downloadQualityDialog = true },
+                            )
+                            rowDivider()
+                            settingRow(
+                                title = "Default download destination",
+                                summary = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                    "Device Downloads rewraps each episode into one MP4 under " +
+                                        "Downloads/Anilili and drops the cached copy. Both keeps the " +
+                                        "cached copy as well, at roughly double the storage."
+                                } else {
+                                    "Public device downloads require Android 10 or newer, so episodes " +
+                                        "stay in Anilili."
+                                },
+                                value = downloadDestination.label,
+                                onClick = { downloadDestinationDialog = true },
+                            )
+                        }
+                    }
+                    SettingsTab.Content -> item {
+                        settingsCategory {
+                            settingRow(
+                                title = "Blur episode images",
+                                summary = "Hide possible spoilers. You can also tap any episode image to " +
+                                    "toggle this everywhere.",
+                                onClick = { SettingsStore.setBlurEpisodeImages(!blurEpisodeImages) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = blurEpisodeImages,
+                                    onCheckedChange = SettingsStore::setBlurEpisodeImages,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Hide adult content",
+                                summary = "Keep hentai out of Home, Search, Browse, and Schedule",
+                                onClick = { SettingsStore.setHideAdultContent(!hideAdultContent) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = hideAdultContent,
+                                    onCheckedChange = SettingsStore::setHideAdultContent,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
                             }
                         }
-                        else -> "Version ${UpdateManager.currentVersion}"
-                    },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                )
-            }
-            }
-
-            settingsSection(
-                title = "About",
-                expanded = "About" in expandedSections,
-                onToggle = { toggleSection("About") },
-            ) {
-            item {
-                SettingsAction(
-                    title = "Share Anilili with friends",
-                    icon = { Icon(Icons.Default.Share, contentDescription = null) },
-                    enabled = true,
-                    onClick = { shareAnilili(context, openWebsite = device.isTv) },
-                )
-            }
-            item {
-                SettingsAction(
-                    title = "Join Telegram Group",
-                    icon = { Icon(painterResource(R.drawable.ic_telegram), contentDescription = null) },
-                    enabled = true,
-                    onClick = {
-                        runCatching {
-                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/anililiapk"))
-                            context.startActivity(intent)
+                    }
+                    SettingsTab.ListSync -> item {
+                        settingsCategory {
+                            settingRow(
+                                title = if (token != null) "Reconnect AniList" else "Sign in to AniList",
+                                summary = when {
+                                    token != null -> "AniList is the active list service"
+                                    malLoggedIn -> "Switches list sync to AniList after sign-in succeeds"
+                                    else -> "Connect lists, scores, and episode progress"
+                                },
+                                icon = { Icon(Icons.Default.AccountCircle, contentDescription = null) },
+                                onClick = { loginService = AccountService.ANILIST },
+                            )
+                            rowDivider()
+                            settingRow(
+                                title = if (malLoggedIn) "Reconnect MyAnimeList" else "Sign in to MyAnimeList",
+                                summary = when {
+                                    malLoggedIn && token == null -> "MyAnimeList is the active list service"
+                                    token != null -> "Switches list sync to MyAnimeList after sign-in succeeds"
+                                    else -> "Connect lists, scores, and episode progress"
+                                },
+                                icon = { Icon(Icons.Default.AccountCircle, contentDescription = null) },
+                                onClick = { loginService = AccountService.MAL },
+                            )
+                            rowDivider()
+                            settingRow(
+                                title = "Sync episode progress",
+                                summary = "Update watched episodes while playing",
+                                onClick = { SettingsStore.setAutoSyncAniList(!autoSync) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = autoSync,
+                                    onCheckedChange = SettingsStore::setAutoSyncAniList,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Sync watchlist with Planning",
+                                summary = "Import Planning after login and add new saves without replacing " +
+                                    "active progress",
+                                onClick = { setWatchlistSync(!syncSavedToAniList) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = syncSavedToAniList,
+                                    onCheckedChange = ::setWatchlistSync,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
                         }
-                    },
-                )
-            }
-            item {
-                SettingsAction(
-                    title = "GitHub Repository",
-                    icon = { Icon(painterResource(R.drawable.ic_github), contentDescription = null) },
-                    enabled = true,
-                    onClick = {
-                        runCatching {
-                            val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/kompoti121/anilili"))
-                            context.startActivity(intent)
+                    }
+                    SettingsTab.Notifications -> item {
+                        settingsCategory {
+                            settingRow(
+                                title = "Notification alerts",
+                                summary = "Logged in: AniList notifications; logged out: saved anime releases",
+                                onClick = { setReleaseNotifications(!releaseNotifications) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = releaseNotifications,
+                                    onCheckedChange = ::setReleaseNotifications,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
                         }
-                    },
-                )
-            }
+                    }
+                    SettingsTab.Data -> item {
+                        settingsCategory {
+                            settingRow(
+                                title = if (malExportBusy) "Preparing MyAnimeList export..." else "Export MyAnimeList XML",
+                                icon = { Icon(Icons.Default.Download, contentDescription = null) },
+                                enabled = !malExportBusy && ((token == null && !malLoggedIn) || profile != null),
+                                onClick = ::exportMal,
+                            )
+                            malExportMessage?.let { message ->
+                                rowDivider()
+                                Text(
+                                    message,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = if (malImportBusy) "Cancel MyAnimeList XML import" else "Import MyAnimeList XML",
+                                summary = malImportProgress?.label,
+                                icon = { Icon(if (malImportBusy) Icons.Default.Close else Icons.Default.Upload, contentDescription = null) },
+                                onClick = {
+                                    if (malImportBusy) {
+                                        malImportJob?.cancel()
+                                    } else {
+                                        malImportLauncher.launch(
+                                            arrayOf("text/xml", "application/xml", "application/gzip", "application/octet-stream", "*/*"),
+                                        )
+                                    }
+                                },
+                            )
+                            malImportMessage?.let { message ->
+                                rowDivider()
+                                Text(
+                                    message,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Clear viewing history",
+                                icon = { Icon(Icons.Default.DeleteSweep, contentDescription = null) },
+                                enabled = history.isNotEmpty(),
+                                onClick = LibraryStore::clearHistory,
+                            )
+                            rowDivider()
+                            settingRow(
+                                title = cacheUsage.let { usage ->
+                                    when {
+                                        cacheClearing -> "Clearing cache..."
+                                        usage != null -> "Clear cache (${Formatter.formatShortFileSize(context, usage)})"
+                                        else -> "Clear cache"
+                                    }
+                                },
+                                icon = { Icon(Icons.Default.Storage, contentDescription = null) },
+                                enabled = !cacheClearing && (cacheUsage ?: 0L) > 0L,
+                                onClick = ::clearCache,
+                            )
+                            Text(
+                                cacheMessage
+                                    ?: "Streamed video and images kept on this device for faster playback. " +
+                                        "The video cache auto-trims at 512 MB.",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        }
+                    }
+                    SettingsTab.App -> item {
+                        settingsCategory {
+                            settingRow(
+                                title = if (spanish) "Idioma del menú" else "Menu language",
+                                summary = if (spanish) {
+                                    "Cambia las etiquetas de navegación principales"
+                                } else {
+                                    "Changes the main navigation labels"
+                                },
+                                value = when (menuLanguage) {
+                                    MenuLanguage.SYSTEM -> if (spanish) "Sistema" else "System"
+                                    MenuLanguage.ENGLISH -> if (spanish) "Inglés" else "English"
+                                    MenuLanguage.SPANISH -> "Español"
+                                },
+                                onClick = { menuLanguageDialog = true },
+                            )
+                            rowDivider()
+                            settingRow(
+                                title = "Send diagnostics",
+                                summary = if (BuildConfig.DIAGNOSTICS_UPLOAD_URL.isNotBlank()) {
+                                    "Uploads a full debugging report. Passwords, cookies, tokens and " +
+                                        "sensitive links are removed."
+                                } else {
+                                    "Temporarily unavailable while the private diagnostics service is " +
+                                        "being activated."
+                                },
+                                icon = { Icon(Icons.Default.Upload, contentDescription = null) },
+                                enabled = !diagnosticsBusy && BuildConfig.DIAGNOSTICS_UPLOAD_URL.isNotBlank(),
+                                onClick = {
+                                    diagnosticsError = null
+                                    diagnosticsDialogVisible = true
+                                },
+                            )
+                            diagnosticsMessage?.let { message ->
+                                rowDivider()
+                                Text(
+                                    message,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = "Check for updates on launch",
+                                summary = "Prompt when a new version is available each time the app opens",
+                                onClick = { SettingsStore.setUpdateCheckOnLaunch(!updateCheckOnLaunch) },
+                            ) {
+                                ExpressiveSwitch(
+                                    checked = updateCheckOnLaunch,
+                                    onCheckedChange = SettingsStore::setUpdateCheckOnLaunch,
+                                    modifier = Modifier.focusProperties { canFocus = false },
+                                )
+                            }
+                            rowDivider()
+                            settingRow(
+                                title = when (updateState) {
+                                    is UpdateManager.State.Checking -> "Checking for updates..."
+                                    is UpdateManager.State.Downloading -> "Downloading update..."
+                                    else -> "Check for updates"
+                                },
+                                icon = { Icon(Icons.Default.SystemUpdate, contentDescription = null) },
+                                enabled = updateState !is UpdateManager.State.Checking &&
+                                    updateState !is UpdateManager.State.Downloading,
+                                onClick = { UpdateManager.check(context, manual = true) },
+                            )
+                            Text(
+                                when (val state = updateState) {
+                                    is UpdateManager.State.UpToDate -> {
+                                        if (state.latestPublishedVersion == UpdateManager.currentVersion) {
+                                            "You're on the latest published version (v${UpdateManager.currentVersion})"
+                                        } else {
+                                            "Installed v${UpdateManager.currentVersion} · published v${state.latestPublishedVersion}"
+                                        }
+                                    }
+                                    else -> "Version ${UpdateManager.currentVersion}"
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                            )
+                        }
+                    }
+                    SettingsTab.About -> item {
+                        settingsCategory {
+                            settingRow(
+                                title = "Share Anilili with friends",
+                                icon = { Icon(Icons.Default.Share, contentDescription = null) },
+                                onClick = { shareAnilili(context, openWebsite = device.isTv) },
+                            )
+                            rowDivider()
+                            settingRow(
+                                title = "Join Telegram Group",
+                                icon = { Icon(painterResource(R.drawable.ic_telegram), contentDescription = null) },
+                                onClick = {
+                                    runCatching {
+                                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://t.me/anililiapk"))
+                                        context.startActivity(intent)
+                                    }
+                                },
+                            )
+                            rowDivider()
+                            settingRow(
+                                title = "GitHub Repository",
+                                icon = { Icon(painterResource(R.drawable.ic_github), contentDescription = null) },
+                                onClick = {
+                                    runCatching {
+                                        val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse("https://github.com/kompoti121/anilili"))
+                                        context.startActivity(intent)
+                                    }
+                                },
+                            )
+                        }
+                    }
+                }
             }
         }
+
     }
 }
 
@@ -898,14 +1040,14 @@ private fun ServerPrioritySetting(
                     } else {
                         null
                     },
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                    modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
                 )
             }
         }
         if (priority.isNotEmpty()) {
-            TextButton(
+            ExpressiveTextButton(
                 onClick = { onChange(emptyList()) },
-                modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+                modifier = Modifier.focusHighlight(MaterialTheme.shapes.large),
             ) {
                 Text("Clear")
             }
@@ -913,271 +1055,223 @@ private fun ServerPrioritySetting(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun DefaultQualitySetting(
-    selected: DefaultQuality,
-    onSelect: (DefaultQuality) -> Unit,
+private fun settingsCategory(
+    shape: Shape = MaterialTheme.shapes.extraLarge,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp)) {
-        Text(
-            "Default quality",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-        )
-        Text(
-            "Picked automatically when an episode starts. Data Saver caps playback at 360p " +
-                "when possible and otherwise uses the closest available low resolution.",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 2.dp),
-        )
-        // Quality chips outgrow a single row on narrow portrait widths, so let them wrap.
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(top = 6.dp),
-        ) {
-            DefaultQuality.entries.forEach { quality ->
-                FilterChip(
-                    selected = selected == quality,
-                    onClick = { onSelect(quality) },
-                    label = { Text(quality.label) },
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
-                )
-            }
+    Surface(
+        shape = shape,
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        modifier = Modifier.fillMaxWidth(),
+    ) { Column(content = content) }
+}
+
+/**
+ * An AOSP main-settings row: leading icon, category title and a trailing chevron, full width with
+ * no card so the divider under each entry runs edge to edge like the stock Settings list.
+ */
+@Composable
+private fun categoryRow(
+    title: String,
+    icon: (@Composable () -> Unit)?,
+    onClick: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .focusHighlight(MaterialTheme.shapes.medium)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        icon?.invoke()
+        if (icon != null) {
+            Spacer(Modifier.width(16.dp))
         }
+        Text(
+            title,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f),
+        )
+        Icon(
+            Icons.Default.ChevronRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-private fun DownloadQualitySetting(
-    selected: DownloadQuality,
-    onSelect: (DownloadQuality) -> Unit,
-) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp)) {
-        Text(
-            "Default download resolution",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-        )
-        Text(
-            "Limits the saved HLS rendition; direct video files keep their source resolution",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 2.dp),
-        )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(top = 6.dp),
-        ) {
-            DownloadQuality.entries.forEach { quality ->
-                FilterChip(
-                    selected = selected == quality,
-                    onClick = { onSelect(quality) },
-                    label = { Text(quality.label) },
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
-                )
-            }
-        }
-    }
+private fun categoryIcon(tab: SettingsTab): ImageVector = when (tab) {
+    SettingsTab.Playback -> Icons.Default.PlayArrow
+    SettingsTab.Servers -> Icons.Default.Cloud
+    SettingsTab.Downloads -> Icons.Default.Download
+    SettingsTab.Content -> Icons.Default.Visibility
+    SettingsTab.ListSync -> Icons.Default.Sync
+    SettingsTab.Notifications -> Icons.Default.Notifications
+    SettingsTab.Data -> Icons.Default.Storage
+    SettingsTab.App -> Icons.Default.Settings
+    SettingsTab.About -> Icons.Default.Info
+    SettingsTab.Accessibility -> Icons.Default.RecordVoiceOver
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * An AOSP-style setting row: icon, title, optional summary and trailing value, then either the
+ * passed [trailing] control or a chevron when the row is a drill-in. The whole row is clickable so
+ * D-pad and touch users get the full 48 dp target; switches keep [Modifier.focusProperties] so the
+ * row (not the switch) takes focus on TV.
+ */
 @Composable
-private fun DownloadDestinationSetting(
-    selected: DownloadDestination,
-    deviceDownloadsSupported: Boolean,
-    onSelect: (DownloadDestination) -> Unit,
+private fun settingRow(
+    title: String,
+    summary: String? = null,
+    value: String? = null,
+    icon: (@Composable () -> Unit)? = null,
+    enabled: Boolean = true,
+    onClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    trailing: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp)) {
-        Text(
-            "Default download destination",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-        )
-        Text(
-            if (deviceDownloadsSupported) {
-                "Device Downloads rewraps each episode into one MP4 under Downloads/Anilili and " +
-                    "drops the cached copy. Both keeps the cached copy as well, at roughly double " +
-                    "the storage."
-            } else {
-                "Public device downloads require Android 10 or newer, so episodes stay in Anilili."
-            },
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 2.dp),
-        )
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(top = 6.dp),
-        ) {
-            // The stored default is Device Downloads, which is unreachable before Android 10.
-            // Without this the old device shows every chip unselected, since the stored value maps
-            // to a disabled chip — downloads still behave (the watch screen forces the library),
-            // but the control looks broken.
-            val effectiveSelection = if (deviceDownloadsSupported) selected else DownloadDestination.APP_ONLY
-            DownloadDestination.entries.forEach { destination ->
-                val enabled = deviceDownloadsSupported || destination == DownloadDestination.APP_ONLY
-                FilterChip(
-                    selected = effectiveSelection == destination && enabled,
-                    onClick = { onSelect(destination) },
-                    enabled = enabled,
-                    label = { Text(destination.label) },
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun MenuLanguageSetting(
-    selected: MenuLanguage,
-    onSelect: (MenuLanguage) -> Unit,
-) {
-    val spanish = selected.usesSpanish()
-    Column(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp)) {
-        Text(
-            if (spanish) "Idioma del menú" else "Menu language",
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-        )
-        Text(
-            if (spanish) "Cambia las etiquetas de navegación principales" else "Changes the main navigation labels",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 2.dp),
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(top = 6.dp),
-        ) {
-            MenuLanguage.entries.forEach { language ->
-                val label = when (language) {
-                    MenuLanguage.SYSTEM -> if (spanish) "Sistema" else "System"
-                    MenuLanguage.ENGLISH -> if (spanish) "Inglés" else "English"
-                    MenuLanguage.SPANISH -> "Español"
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .then(
+                if (onClick != null) {
+                    Modifier
+                        .focusHighlight(MaterialTheme.shapes.large)
+                        .clickable(enabled = enabled, onClick = onClick)
+                } else {
+                    Modifier
                 }
-                FilterChip(
-                    selected = selected == language,
-                    onClick = { onSelect(language) },
-                    label = { Text(label) },
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp)),
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        icon?.invoke()
+        if (icon != null) {
+            Spacer(Modifier.width(16.dp))
+        }
+        Column(Modifier.weight(1f)) {
+            Text(
+                title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = if (enabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = .38f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (summary != null) {
+                Text(
+                    summary,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 2.dp),
                 )
             }
+        }
+        value?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (enabled) {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = .38f)
+                },
+                maxLines = 1,
+                modifier = Modifier.padding(start = 16.dp),
+            )
+        }
+        if (trailing != null) {
+            trailing()
+        } else if (onClick != null) {
+            Icon(
+                Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = if (enabled) {
+                    MaterialTheme.colorScheme.onSurfaceVariant
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = .38f)
+                },
+                modifier = Modifier.padding(start = 16.dp),
+            )
         }
     }
 }
 
 @Composable
-private fun SettingsSectionTitle(title: String) {
-    Text(
-        title,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Black,
-        modifier = Modifier.padding(start = 12.dp, top = 18.dp, bottom = 6.dp),
+private fun ColumnScope.rowDivider() {
+    HorizontalDivider(
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = .5f),
+        modifier = Modifier.padding(horizontal = 16.dp),
     )
 }
 
 /**
- * A collapsible settings group: a focusable header that toggles, and rows emitted only while open.
- *
- * The rows stay [LazyListScope] items rather than moving inside a Column, so a long section still
- * only composes what is on screen. Collapsing simply stops emitting them, which also means a
- * D-pad user never tabs through rows they cannot see.
+ * A single-choice setting picker shown as an AOSP radio dialog. The row in the settings list shows
+ * the current [selected] value and opens this with a chevron.
  */
-private fun LazyListScope.settingsSection(
-    title: String,
-    expanded: Boolean,
-    onToggle: () -> Unit,
-    content: LazyListScope.() -> Unit,
-) {
-    item(key = "section-$title") { SettingsSectionHeader(title, expanded, onToggle) }
-    if (expanded) content()
-    item(key = "divider-$title") { SectionDivider() }
-}
-
 @Composable
-private fun SettingsSectionHeader(title: String, expanded: Boolean, onToggle: () -> Unit) {
-    val rotation by animateFloatAsState(if (expanded) 180f else 0f, label = "section-chevron")
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            // No scale on focus: these rows span the full width, and TV's 6% zoom pushed the
-            // title off the left edge and the chevron off the right. The border alone is a clear
-            // enough affordance for a row this size.
-            .focusHighlight(RoundedCornerShape(10.dp), focusedScale = 1f)
-            .clickable(onClick = onToggle)
-            .padding(start = 12.dp, end = 12.dp, top = 14.dp, bottom = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            title,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Black,
-            modifier = Modifier.weight(1f),
-        )
-        Icon(
-            Icons.Default.ExpandMore,
-            contentDescription = if (expanded) "Collapse $title" else "Expand $title",
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.rotate(rotation),
-        )
-    }
-}
-
-@Composable
-private fun SettingSwitch(
+private fun <T> SettingsRadioDialog(
     title: String,
-    description: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    options: List<T>,
+    selected: T,
+    label: @Composable (T) -> String,
+    onSelect: (T) -> Unit,
+    onDismiss: () -> Unit,
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .focusHighlight(RoundedCornerShape(8.dp))
-            .clickable { onCheckedChange(!checked) }
-            .padding(horizontal = 12.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
-            Text(description, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-        Switch(checked, onCheckedChange, Modifier.focusProperties { canFocus = false })
-    }
-}
-
-@Composable
-private fun SettingsAction(
-    title: String,
-    description: String? = null,
-    icon: @Composable () -> Unit,
-    enabled: Boolean,
-    onClick: () -> Unit,
-) {
-    TextButton(
-        onClick = onClick,
-        enabled = enabled,
-        modifier = Modifier.fillMaxWidth().focusHighlight(RoundedCornerShape(8.dp)),
-        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
-    ) {
-        icon()
-        Column(modifier = Modifier.padding(start = 10.dp).weight(1f)) {
-            Text(title)
-            description?.let {
-                Text(
-                    it,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            Column {
+                options.forEach { option ->
+                    val isSelected = option == selected
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = isSelected,
+                                role = Role.RadioButton,
+                                onClick = { onSelect(option) },
+                            )
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            label(option),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f),
+                        )
+                        RadioButton(selected = isSelected, onClick = null)
+                    }
+                }
             }
-        }
-    }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) { Text("Done") }
+        },
+    )
 }
+
+
+/** A single top-level settings category, shown as one tab in the AOSP-style tab row. */
+private enum class SettingsTab {
+    Playback,
+    Accessibility,
+    Servers,
+    Downloads,
+    Content,
+    ListSync,
+    Notifications,
+    Data,
+    App,
+    About,
+}
+
 
 private fun Context.malImportReportedSize(uri: Uri): Long? =
     runCatching {
@@ -1193,11 +1287,3 @@ private fun Context.malImportReportedSize(uri: Uri): Long? =
             if (column < 0 || cursor.isNull(column)) null else cursor.getLong(column).takeIf { it >= 0L }
         }
     }.getOrNull()
-
-@Composable
-private fun SectionDivider() {
-    HorizontalDivider(
-        modifier = Modifier.padding(top = 10.dp),
-        color = MaterialTheme.colorScheme.outline.copy(alpha = .7f),
-    )
-}

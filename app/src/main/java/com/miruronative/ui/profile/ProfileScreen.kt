@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ViewList
@@ -39,20 +38,16 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SaveAlt
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -75,6 +70,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.auth.AccountService
 import com.miruronative.data.auth.AuthManager
 import com.miruronative.data.auth.MalAuthManager
@@ -540,7 +539,7 @@ private fun ProfileHero(
     modifier: Modifier = Modifier,
 ) {
     val device = LocalAppDeviceProfile.current
-    val shape = RoundedCornerShape(12.dp)
+    val shape = MaterialTheme.shapes.medium
     Column(
         modifier
             .fillMaxWidth()
@@ -558,15 +557,15 @@ private fun ProfileHero(
                     modifier = Modifier.padding(top = 5.dp),
                 )
                 Row(Modifier.padding(top = 16.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Button(
+                    ExpressiveButton(
                         onClick = { onLogin(AccountService.ANILIST) },
-                        modifier = Modifier.focusHighlight(RoundedCornerShape(9.dp)),
+                        modifier = Modifier.focusHighlight(MaterialTheme.shapes.small),
                     ) {
                         Text("Login with AniList", fontWeight = FontWeight.Bold)
                     }
-                    OutlinedButton(
+                    ExpressiveOutlinedButton(
                         onClick = { onLogin(AccountService.MAL) },
-                        modifier = Modifier.focusHighlight(RoundedCornerShape(9.dp)),
+                        modifier = Modifier.focusHighlight(MaterialTheme.shapes.small),
                     ) {
                         Text("Login with MAL", fontWeight = FontWeight.Bold)
                     }
@@ -609,9 +608,9 @@ private fun ProfileHero(
                             .align(Alignment.BottomStart)
                             .padding(16.dp)
                             .size(if (device.isTv) 104.dp else 88.dp)
-                            .clip(RoundedCornerShape(14.dp))
+                            .clip(MaterialTheme.shapes.medium)
                             .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .border(2.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(14.dp)),
+                            .border(2.dp, MaterialTheme.colorScheme.onSurface, MaterialTheme.shapes.medium),
                         contentScale = ContentScale.Crop,
                     )
                     // Level with the avatar, in the banner space that was already empty. The
@@ -642,10 +641,10 @@ private fun ProfileHero(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    IconButton(onClick = onSync, modifier = Modifier.focusHighlight(RoundedCornerShape(9.dp))) {
+                    ExpressiveIconButton(onClick = onSync, modifier = Modifier.focusHighlight(MaterialTheme.shapes.small)) {
                         Icon(Icons.Default.Refresh, contentDescription = "Sync AniList")
                     }
-                    IconButton(onClick = onLogout, modifier = Modifier.focusHighlight(RoundedCornerShape(9.dp))) {
+                    ExpressiveIconButton(onClick = onLogout, modifier = Modifier.focusHighlight(MaterialTheme.shapes.small)) {
                         Icon(Icons.Default.Close, contentDescription = "Logout")
                     }
                 }
@@ -654,8 +653,8 @@ private fun ProfileHero(
                 Text("Your lists could not be loaded", fontWeight = FontWeight.Bold)
                 Text(state.message, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 4.dp))
                 Row(Modifier.padding(top = 8.dp)) {
-                    TextButton(onClick = onSync) { Text("Try again") }
-                    TextButton(onClick = onLogout) { Text("Logout") }
+                    ExpressiveTextButton(onClick = onSync) { Text("Try again") }
+                    ExpressiveTextButton(onClick = onLogout) { Text("Logout") }
                 }
             }
             else -> Text("Syncing your profile…", color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(20.dp))
@@ -741,9 +740,9 @@ private fun LibraryFilters(
                     placeholder = { Text("Filter by title") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     trailingIcon = if (titleFilter.isNotEmpty()) {
-                        { IconButton(onClick = { onTitleFilterChange("") }) { Icon(Icons.Default.Close, contentDescription = "Clear title filter") } }
+                        { ExpressiveIconButton(onClick = { onTitleFilterChange("") }) { Icon(Icons.Default.Close, contentDescription = "Clear title filter") } }
                     } else null,
-                    shape = RoundedCornerShape(9.dp),
+                    shape = MaterialTheme.shapes.small,
                     singleLine = true,
                 )
             }
@@ -766,8 +765,8 @@ private fun SelectorField(
     var expanded by remember { mutableStateOf(false) }
     Box(modifier) {
         Surface(
-            modifier = Modifier.fillMaxWidth().focusHighlight(RoundedCornerShape(9.dp)).clickable { expanded = true },
-            shape = RoundedCornerShape(9.dp),
+            modifier = Modifier.fillMaxWidth().focusHighlight(MaterialTheme.shapes.small).clickable { expanded = true },
+            shape = MaterialTheme.shapes.small,
             color = MaterialTheme.colorScheme.background,
             border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
         ) {
@@ -810,9 +809,9 @@ private fun ProfileSectionTitle(
             Text(subtitle, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         if (onToggleExpand != null && isExpanded != null) {
-            TextButton(
+            ExpressiveTextButton(
                 onClick = onToggleExpand,
-                modifier = Modifier.focusHighlight(RoundedCornerShape(8.dp)),
+                modifier = Modifier.focusHighlight(MaterialTheme.shapes.small),
             ) {
                 Icon(
                     if (isExpanded) Icons.AutoMirrored.Filled.ViewList else Icons.Default.GridView,
@@ -847,7 +846,7 @@ private fun EpisodeDownloadCard(
         )[episode.id]?.takeIf { it.isBusy }
     }
     val device = LocalAppDeviceProfile.current
-    val shape = RoundedCornerShape(12.dp)
+    val shape = MaterialTheme.shapes.medium
     val cardModifier = if (modifier != Modifier) {
         modifier.focusHighlight(shape)
     } else {
@@ -976,7 +975,7 @@ private fun EpisodeDownloadCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     download?.takeIf { it.canPause || it.canResume }?.let { controlledDownload ->
-                        IconButton(onClick = onPauseToggle) {
+                        ExpressiveIconButton(onClick = onPauseToggle) {
                             Icon(
                                 if (controlledDownload.isPaused) Icons.Default.PlayArrow else Icons.Default.Pause,
                                 contentDescription = if (controlledDownload.isPaused) {
@@ -995,7 +994,7 @@ private fun EpisodeDownloadCard(
                             download?.isComplete == true &&
                             !episode.isInDownloadsFolder
                         ) {
-                            TextButton(
+                            ExpressiveTextButton(
                                 onClick = onExport,
                                 enabled = exportStatus == null ||
                                     exportStatus.state == EpisodeExportState.FAILED,
@@ -1004,7 +1003,7 @@ private fun EpisodeDownloadCard(
                                 Text("MP4", modifier = Modifier.padding(start = 4.dp))
                             }
                         }
-                        TextButton(onClick = onPlay) {
+                        ExpressiveTextButton(onClick = onPlay) {
                             Icon(Icons.Default.PlayArrow, contentDescription = null)
                             Text("Play", modifier = Modifier.padding(start = 4.dp))
                         }
@@ -1015,7 +1014,7 @@ private fun EpisodeDownloadCard(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    IconButton(onClick = onRemove) {
+                    ExpressiveIconButton(onClick = onRemove) {
                         Icon(Icons.Default.Delete, contentDescription = "Remove download")
                     }
                 }
@@ -1068,7 +1067,7 @@ private fun HistoryCard(
     }
     Column(cardModifier) {
         Box(
-            Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(RoundedCornerShape(9.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
+            Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.surfaceVariant),
         ) {
             AsyncImage(entry.cover, entry.title, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
             Icon(Icons.Default.PlayArrow, contentDescription = "Resume", tint = Color.White, modifier = Modifier.align(Alignment.Center))
@@ -1111,7 +1110,7 @@ private fun SavedAnimeCard(
     }
     Column(cardModifier) {
         Box(
-            Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(RoundedCornerShape(9.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
+            Modifier.fillMaxWidth().aspectRatio(2f / 3f).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.surfaceVariant),
         ) {
             AsyncImage(entry.cover, entry.title, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
             when {
@@ -1150,7 +1149,7 @@ private fun SavedAnimeCard(
 private fun CornerBadge(text: String, modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(5.dp),
+        shape = MaterialTheme.shapes.extraSmall,
         color = Color.Black.copy(alpha = .82f),
     ) {
         Text(
@@ -1173,7 +1172,7 @@ private fun EmptyPanel(text: String) {
 
 @Composable
 private fun Panel(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    val shape = RoundedCornerShape(10.dp)
+    val shape = MaterialTheme.shapes.medium
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = shape,

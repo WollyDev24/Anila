@@ -5,8 +5,11 @@ ksp = "2.0.21-1.0.28"
 coreKtx = "1.15.0"
 lifecycle = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.12.01"
 navigation = "2.8.5"
+# BOM 2025.11.01: material3 1.4.0 (M3 Expressive) + ui/foundation 1.9.5.
+# This is the newest BOM that keeps Compose minSdk at 21 (Fire OS 5 / API 22 target);
+# BOM 2025.12.00+ pins ui 1.10.0 which requires minSdk 23.
+composeBom = "2025.11.01"
 # 1.9+ raises minSdk to 23. Keep the last API-22-compatible line for Fire OS 5.
 media3 = "1.8.1"
 playServicesCronet = "18.0.1"

@@ -31,18 +31,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -72,6 +69,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.library.HistoryEntry
 import com.miruronative.data.model.EpisodeItem
 import com.miruronative.data.model.Media
@@ -97,7 +98,6 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 
 private val TvDetailPadding = 48.dp
-private val TvDetailCardShape = RoundedCornerShape(12.dp)
 private val TvEpisodeCardWidth = 270.dp
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -292,10 +292,10 @@ private fun TvDetailInfoPane(
             horizontalArrangement = Arrangement.spacedBy(11.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Button(
+            ExpressiveButton(
                 onClick = onWatch,
                 enabled = canWatch,
-                shape = RoundedCornerShape(12.dp),
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.White,
                     contentColor = Color.Black,
@@ -311,7 +311,7 @@ private fun TvDetailInfoPane(
                     .onFocusChanged {
                         if (it.isFocused || it.hasFocus) onPrimaryFocusAcquired()
                     }
-                    .focusHighlight(RoundedCornerShape(12.dp), focusedScale = 1.04f),
+                    .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.04f),
             ) {
                 Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(21.dp))
                 Text(
@@ -320,15 +320,15 @@ private fun TvDetailInfoPane(
                     modifier = Modifier.padding(start = 7.dp),
                 )
             }
-            OutlinedButton(
+            ExpressiveOutlinedButton(
                 onClick = onToggleSaved,
-                shape = RoundedCornerShape(12.dp),
+                shape = MaterialTheme.shapes.small,
                 colors = ButtonDefaults.outlinedButtonColors(
                     containerColor = Color.Black.copy(alpha = 0.52f),
                     contentColor = Color.White,
                 ),
                 contentPadding = PaddingValues(horizontal = 17.dp, vertical = 9.dp),
-                modifier = Modifier.focusHighlight(RoundedCornerShape(12.dp), focusedScale = 1.04f),
+                modifier = Modifier.focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.04f),
             ) {
                 Icon(
                     if (saved || listStatusLabel != null) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -356,8 +356,8 @@ private fun TvDetailInfoPane(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 13.sp,
                         modifier = Modifier
-                            .focusHighlight(RoundedCornerShape(9.dp), focusedScale = 1.03f)
-                            .clip(RoundedCornerShape(9.dp))
+                            .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.03f)
+                            .clip(MaterialTheme.shapes.small)
                             .background(Color.Black.copy(alpha = 0.42f))
                             .clickable(enabled = selectedStudio.id > 0) { onStudioClick(selectedStudio) }
                             .padding(horizontal = 12.dp, vertical = 8.dp),
@@ -447,7 +447,7 @@ private fun TvRelatedCompactRail(
                                 Modifier.focusProperties { right = target.requester }
                             } ?: Modifier,
                         )
-                        .focusHighlight(RoundedCornerShape(9.dp), focusedScale = 1.04f)
+                        .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.04f)
                         .clickable { onAnimeClick(media.id) },
                 ) {
                     AsyncImage(
@@ -456,7 +456,7 @@ private fun TvRelatedCompactRail(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(16f / 9f)
-                            .clip(RoundedCornerShape(9.dp))
+                            .clip(MaterialTheme.shapes.small)
                             .background(MaterialTheme.colorScheme.surfaceVariant),
                         contentScale = ContentScale.Crop,
                     )
@@ -534,9 +534,9 @@ private fun TvEpisodeBrowserPane(
 
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
+            .clip(MaterialTheme.shapes.medium)
             .background(Color.Black.copy(alpha = 0.78f))
-            .border(1.dp, Color.White.copy(alpha = 0.10f), RoundedCornerShape(18.dp))
+            .border(1.dp, Color.White.copy(alpha = 0.10f), MaterialTheme.shapes.medium)
             .padding(top = 18.dp),
     ) {
         Row(
@@ -694,8 +694,8 @@ private fun TvDetailFilterChip(
         fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
         fontSize = 12.sp,
         modifier = modifier
-            .focusHighlight(RoundedCornerShape(9.dp), focusedScale = 1.05f)
-            .clip(RoundedCornerShape(9.dp))
+            .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.05f)
+            .clip(MaterialTheme.shapes.small)
             .background(
                 if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.30f)
                 else Color.White.copy(alpha = 0.07f),
@@ -704,7 +704,7 @@ private fun TvDetailFilterChip(
                 1.dp,
                 if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.72f)
                 else Color.White.copy(alpha = 0.08f),
-                RoundedCornerShape(9.dp),
+                MaterialTheme.shapes.small,
             )
             .clickable(onClick = onClick)
             .padding(horizontal = 13.dp, vertical = 7.dp),
@@ -739,12 +739,12 @@ private fun TvEpisodeListRow(
                 if (blockDown) down = FocusRequester.Cancel
             }
             .onFocusChanged { focused = it.isFocused }
-            .clip(RoundedCornerShape(12.dp))
+            .clip(MaterialTheme.shapes.small)
             .background(if (focused) Color.White.copy(alpha = 0.13f) else Color.White.copy(alpha = 0.055f))
             .border(
                 if (focused) 2.dp else 1.dp,
                 if (focused) MaterialTheme.colorScheme.primary else Color.White.copy(alpha = 0.07f),
-                RoundedCornerShape(12.dp),
+                MaterialTheme.shapes.small,
             )
             .clickable(onClickLabel = "Play episode ${episode.displayNumber}", onClick = onClick)
             .padding(8.dp),
@@ -759,7 +759,7 @@ private fun TvEpisodeListRow(
             modifier = Modifier
                 .width(142.dp)
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(MaterialTheme.shapes.extraSmall)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
             contentScale = ContentScale.Crop,
         )
@@ -785,7 +785,7 @@ private fun TvEpisodeListRow(
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Black,
                         modifier = Modifier
-                            .clip(RoundedCornerShape(5.dp))
+                            .clip(MaterialTheme.shapes.extraSmall)
                             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.32f))
                             .padding(horizontal = 6.dp, vertical = 3.dp),
                     )
@@ -898,10 +898,10 @@ private fun TvDetailHero(
                 horizontalArrangement = Arrangement.spacedBy(11.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Button(
+                ExpressiveButton(
                     onClick = onWatch,
                     enabled = canWatch,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
                         contentColor = Color.Black,
@@ -912,7 +912,7 @@ private fun TvDetailHero(
                         .onFocusChanged {
                             if (it.isFocused || it.hasFocus) onPrimaryFocusAcquired()
                         }
-                        .focusHighlight(RoundedCornerShape(12.dp), focusedScale = 1.04f),
+                        .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.04f),
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(21.dp))
                     Text(
@@ -921,15 +921,15 @@ private fun TvDetailHero(
                         modifier = Modifier.padding(start = 7.dp),
                     )
                 }
-                OutlinedButton(
+                ExpressiveOutlinedButton(
                     onClick = onToggleSaved,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.small,
                     colors = ButtonDefaults.outlinedButtonColors(
                         containerColor = Color.Black.copy(.42f),
                         contentColor = Color.White,
                     ),
                     contentPadding = PaddingValues(horizontal = 17.dp, vertical = 9.dp),
-                    modifier = Modifier.focusHighlight(RoundedCornerShape(12.dp), focusedScale = 1.04f),
+                    modifier = Modifier.focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.04f),
                 ) {
                     Icon(
                         if (saved || listStatusLabel != null) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -949,7 +949,7 @@ private fun TvDetailHero(
                         fontSize = 12.sp,
                         maxLines = 1,
                         modifier = Modifier
-                            .clip(RoundedCornerShape(10.dp))
+                            .clip(MaterialTheme.shapes.small)
                             .background(Color.Black.copy(.34f))
                             .clickable(enabled = it.id > 0) { onStudioClick(it) }
                             .padding(horizontal = 10.dp, vertical = 8.dp),
@@ -1029,8 +1029,8 @@ private fun TvSeasonRail(
                     fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
                     fontSize = 14.sp,
                     modifier = Modifier
-                        .focusHighlight(RoundedCornerShape(10.dp), focusedScale = 1.05f)
-                        .clip(RoundedCornerShape(10.dp))
+                        .focusHighlight(MaterialTheme.shapes.small, focusedScale = 1.05f)
+                        .clip(MaterialTheme.shapes.small)
                         .background(
                             if (active) MaterialTheme.colorScheme.primary.copy(.30f)
                             else MaterialTheme.colorScheme.surface,
@@ -1039,7 +1039,7 @@ private fun TvSeasonRail(
                             1.dp,
                             if (active) MaterialTheme.colorScheme.primary.copy(.72f)
                             else Color.White.copy(.09f),
-                            RoundedCornerShape(10.dp),
+                            MaterialTheme.shapes.small,
                         )
                         .clickable { onSelect(season.id) }
                         .padding(horizontal = 15.dp, vertical = 9.dp),
@@ -1115,12 +1115,12 @@ private fun TvEpisodeCard(
             Modifier
                 .fillMaxWidth()
                 .aspectRatio(16f / 9f)
-                .clip(TvDetailCardShape)
+                .clip(MaterialTheme.shapes.small)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .border(
                     if (focused) 3.dp else 1.dp,
                     if (focused) MaterialTheme.colorScheme.primary else Color.White.copy(.08f),
-                    TvDetailCardShape,
+                    MaterialTheme.shapes.small,
                 ),
         ) {
             EpisodeArtwork(
@@ -1147,7 +1147,7 @@ private fun TvEpisodeCard(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(7.dp)
-                    .clip(RoundedCornerShape(5.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(Color.Black.copy(.70f))
                     .padding(horizontal = 7.dp, vertical = 4.dp),
             )
@@ -1244,12 +1244,12 @@ private fun TvRelatedRail(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(16f / 9f)
-                            .clip(TvDetailCardShape)
+                            .clip(MaterialTheme.shapes.small)
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                             .border(
                                 if (focused) 3.dp else 1.dp,
                                 if (focused) MaterialTheme.colorScheme.primary else Color.White.copy(.08f),
-                                TvDetailCardShape,
+                                MaterialTheme.shapes.small,
                             ),
                         contentScale = ContentScale.Crop,
                     )

@@ -24,7 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
@@ -32,13 +32,10 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -70,6 +67,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.miruronative.ui.components.ExpressiveButton
+import com.miruronative.ui.components.ExpressiveIconButton
+import com.miruronative.ui.components.ExpressiveOutlinedButton
+import com.miruronative.ui.components.ExpressiveTextButton
 import com.miruronative.data.library.HistoryEntry
 import com.miruronative.data.library.LibraryStore
 import com.miruronative.data.library.WatchlistEntry
@@ -92,6 +93,7 @@ import com.miruronative.ui.adaptive.TvNativeTextField
 import com.miruronative.ui.adaptive.focusHighlight
 import com.miruronative.ui.components.EPISODE_BROWSER_MIN_EPISODES
 import com.miruronative.ui.components.EpisodeBrowserBar
+import com.miruronative.ui.components.expressivePress
 import com.miruronative.ui.components.FastScrollbar
 import com.miruronative.ui.components.EpisodeNumberChip
 import com.miruronative.ui.components.EpisodeArtwork
@@ -205,7 +207,7 @@ fun DetailScreen(
                 TopAppBar(
                     title = {},
                     navigationIcon = {
-                        IconButton(
+                        ExpressiveIconButton(
                             onClick = onBack,
                             modifier = Modifier
                                 .focusRequester(backFocusRequester)
@@ -213,7 +215,7 @@ fun DetailScreen(
                                     if (device.isTv && !backFocusEnabled) canFocus = false
                                     if (detailActionsReady) down = primaryActionFocusRequester
                                 }
-                                .focusHighlight(RoundedCornerShape(24.dp)),
+                                .focusHighlight(MaterialTheme.shapes.extraLarge),
                         ) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
@@ -549,8 +551,8 @@ private fun DetailHero(info: Media, onStudioClick: (StudioNode) -> Unit) {
                 modifier = Modifier
                     .width(if (device.isExpanded) 126.dp else 98.dp)
                     .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp)),
+                    .clip(MaterialTheme.shapes.medium)
+                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium),
                 contentScale = ContentScale.Crop,
             )
             Column(Modifier.weight(1f).padding(bottom = 4.dp)) {
@@ -568,7 +570,7 @@ private fun DetailHero(info: Media, onStudioClick: (StudioNode) -> Unit) {
                         label = { Text(studio.name.orEmpty()) },
                         modifier = Modifier
                             .padding(top = 3.dp)
-                            .focusHighlight(RoundedCornerShape(8.dp)),
+                            .focusHighlight(MaterialTheme.shapes.small),
                     )
                 }
                 Text(
@@ -603,7 +605,7 @@ private fun DetailActions(
         modifier = Modifier.fillMaxWidth().padding(start = pad, end = pad, bottom = 14.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        OutlinedButton(
+        ExpressiveOutlinedButton(
             onClick = onToggleSaved,
             modifier = Modifier
                 .weight(1f)
@@ -615,7 +617,7 @@ private fun DetailActions(
                     if (state.isFocused || state.hasFocus) onPrimaryFocusAcquired()
                 }
                 .focusProperties { up = backFocusRequester }
-                .focusHighlight(RoundedCornerShape(24.dp)),
+                .focusHighlight(MaterialTheme.shapes.extraLarge),
         ) {
             Icon(
                 imageVector = if (saved || listStatusLabel != null) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
@@ -627,7 +629,7 @@ private fun DetailActions(
                 Modifier.padding(start = 6.dp),
             )
         }
-        Button(
+        ExpressiveButton(
             onClick = onWatch,
             enabled = canWatch,
             modifier = Modifier
@@ -640,7 +642,7 @@ private fun DetailActions(
                     if (state.isFocused || state.hasFocus) onPrimaryFocusAcquired()
                 }
                 .focusProperties { up = backFocusRequester }
-                .focusHighlight(RoundedCornerShape(24.dp)),
+                .focusHighlight(MaterialTheme.shapes.extraLarge),
         ) {
             if (resolving) {
                 CircularProgressIndicator(
@@ -715,8 +717,8 @@ private fun DetailTabs(
                 color = if (active) MaterialTheme.colorScheme.onPrimary
                 else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .focusHighlight(RoundedCornerShape(18.dp))
-                    .clip(RoundedCornerShape(18.dp))
+                    .focusHighlight(MaterialTheme.shapes.large)
+                    .clip(MaterialTheme.shapes.large)
                     .background(
                         if (active) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.surface,
@@ -744,9 +746,9 @@ private fun QuickFacts(info: Media) {
             Column(
                 modifier = Modifier
                     .width(112.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
                     .padding(12.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -771,9 +773,9 @@ private fun NextAiringCard(airingAt: Long, episode: Int?) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = LocalAppDeviceProfile.current.pagePadding, vertical = 8.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
             .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -799,7 +801,7 @@ private fun GenreRow(genres: List<String>) {
                 text = genre,
                 style = MaterialTheme.typography.labelMedium,
                 modifier = Modifier
-                    .clip(RoundedCornerShape(16.dp))
+                    .clip(MaterialTheme.shapes.medium)
                     .background(MaterialTheme.colorScheme.surfaceVariant)
                     .padding(horizontal = 11.dp, vertical = 6.dp),
             )
@@ -850,9 +852,9 @@ private fun MetadataCard(info: Media) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = LocalAppDeviceProfile.current.pagePadding, vertical = 8.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
             .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
         rows.forEach { (label, value) ->
@@ -886,8 +888,8 @@ private fun SeasonFilterRow(
             val active = season.id == selectedSeasonId
             Column(
                 modifier = Modifier
-                    .focusHighlight(RoundedCornerShape(12.dp))
-                    .clip(RoundedCornerShape(12.dp))
+                    .focusHighlight(MaterialTheme.shapes.medium)
+                    .clip(MaterialTheme.shapes.medium)
                     .background(
                         if (active) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.surface,
@@ -896,7 +898,7 @@ private fun SeasonFilterRow(
                         1.dp,
                         if (active) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.outline,
-                        RoundedCornerShape(12.dp),
+                        MaterialTheme.shapes.medium,
                     )
                     .clickable { onSelect(season.id) }
                     .padding(horizontal = 14.dp, vertical = 8.dp),
@@ -933,13 +935,16 @@ private fun DetailEpisodeRow(
     downloadState: EpisodeDownloadUi? = null,
     modifier: Modifier = Modifier,
 ) {
+    val rowShape = MaterialTheme.shapes.medium
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = LocalAppDeviceProfile.current.pagePadding, vertical = 6.dp)
-            .focusHighlight(RoundedCornerShape(12.dp))
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onClick)
+            .focusHighlight(rowShape)
+            .expressivePress(interactionSource, rowShape, pressScale = 0.99f, pressRadiusFraction = 0.7f)
+            .clip(rowShape)
+            .clickable(interactionSource = interactionSource, onClick = onClick)
             .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -947,7 +952,7 @@ private fun DetailEpisodeRow(
             Modifier
                 .width(132.dp)
                 .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(10.dp)),
+                .clip(MaterialTheme.shapes.medium),
         ) {
             EpisodeArtwork(
                 image = episodeArtworkImage(episode.image, fallbackImage),
@@ -962,7 +967,7 @@ private fun DetailEpisodeRow(
                 modifier = Modifier
                     .align(if (watchedFraction > 0.01f) Alignment.TopEnd else Alignment.BottomEnd)
                     .padding(5.dp)
-                    .clip(RoundedCornerShape(5.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(Color.Black.copy(alpha = 0.78f))
                     .padding(horizontal = 6.dp, vertical = 3.dp),
             )
@@ -975,7 +980,7 @@ private fun DetailEpisodeRow(
             )
             DownloadCoverBadge(
                 state = downloadState,
-                modifier = Modifier.matchParentSize().clip(RoundedCornerShape(10.dp)),
+                modifier = Modifier.matchParentSize().clip(MaterialTheme.shapes.medium),
                 compact = true,
             )
         }
@@ -1005,10 +1010,10 @@ private fun RelatedRow(media: Media, onOpen: () -> Unit, onWatch: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = LocalAppDeviceProfile.current.pagePadding, vertical = 6.dp)
-            .focusHighlight(RoundedCornerShape(12.dp))
-            .clip(RoundedCornerShape(12.dp))
+            .focusHighlight(MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.surface)
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.medium)
             .clickable(onClick = onOpen)
             .padding(9.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -1016,7 +1021,7 @@ private fun RelatedRow(media: Media, onOpen: () -> Unit, onWatch: () -> Unit) {
         AsyncImage(
             model = media.coverImage.best,
             contentDescription = media.title.preferred,
-            modifier = Modifier.width(58.dp).aspectRatio(2f / 3f).clip(RoundedCornerShape(8.dp)),
+            modifier = Modifier.width(58.dp).aspectRatio(2f / 3f).clip(MaterialTheme.shapes.small),
             contentScale = ContentScale.Crop,
         )
         Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
@@ -1028,7 +1033,7 @@ private fun RelatedRow(media: Media, onOpen: () -> Unit, onWatch: () -> Unit) {
                 modifier = Modifier.padding(top = 4.dp),
             )
         }
-        IconButton(onClick = onWatch, modifier = Modifier.focusHighlight(RoundedCornerShape(20.dp))) {
+        ExpressiveIconButton(onClick = onWatch, modifier = Modifier.focusHighlight(MaterialTheme.shapes.large)) {
             Icon(Icons.Default.PlayArrow, contentDescription = "Watch ${media.title.preferred}")
         }
     }
