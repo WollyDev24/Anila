@@ -122,9 +122,9 @@ android {
             // runs on every ABI) must precede "Anilili_<abi>.apk". Never name splits with '-';
             // '-' sorts before '.' and legacy TVs would fetch an incompatible split.
             output.outputFileName = if (abi == null) {
-                "Anilili$buildTypeSuffix.apk"
+                "Anila$buildTypeSuffix.apk"
             } else {
-                "Anilili${buildTypeSuffix}_$abi.apk"
+                "Anila${buildTypeSuffix}_$abi.apk"
             }
         }
     }
