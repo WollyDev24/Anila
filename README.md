@@ -10,26 +10,23 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/kompoti121/Anilili/releases/latest/download/Anilili.apk">
+  <a href="https://github.com/wollydev24/Anilili/releases/latest/download/Anilili.apk">
     <img src="https://img.shields.io/badge/Download_APK-8979F2?style=for-the-badge&logo=android&logoColor=white" alt="Download Anilili APK" />
-  </a>
-  <a href="https://t.me/anililiapk">
-    <img src="https://img.shields.io/badge/Join_Telegram-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Join the Anilili Telegram group" />
   </a>
 </p>
 
 <p align="center">
-  <a href="https://github.com/kompoti121/Anilili/releases/latest"><img src="https://img.shields.io/github/v/release/kompoti121/Anilili?style=flat-square&label=release&color=8979F2" alt="Latest GitHub release" /></a>
-  <a href="https://github.com/kompoti121/Anilili/releases"><img src="https://img.shields.io/github/downloads/kompoti121/Anilili/total?style=flat-square&label=downloads&color=8979F2" alt="Total GitHub downloads" /></a>
+  <a href="https://github.com/wollydev24/Anilili/releases/latest"><img src="https://img.shields.io/github/v/release/wollydev24/Anilili?style=flat-square&label=release&color=8979F2" alt="Latest GitHub release" /></a>
+  <a href="https://github.com/wollydev24/Anilili/releases"><img src="https://img.shields.io/github/downloads/wollydev24/Anilili/total?style=flat-square&label=downloads&color=8979F2" alt="Total GitHub downloads" /></a>
   <img src="https://img.shields.io/badge/Android-5.1%2B-3DDC84?style=flat-square&logo=android&logoColor=white" alt="Android 5.1 and newer" />
   <img src="https://img.shields.io/badge/Kotlin-Native_UI-7F52FF?style=flat-square&logo=kotlin&logoColor=white" alt="Built with Kotlin" />
   <img src="https://img.shields.io/badge/Android_TV-Fire_TV-FF9900?style=flat-square&logo=amazonfiretv&logoColor=white" alt="Android TV and Fire TV" />
 </p>
 
 <p align="center">
-  <a href="https://kompoti121.github.io/Anilili/">Website</a> ·
-  <a href="https://github.com/kompoti121/Anilili/releases">All releases</a> ·
-  <a href="https://github.com/kompoti121/Anilili/issues">Report a problem</a>
+  <a href="https://wollydev24.github.io/Anilili/">Website</a> ·
+  <a href="https://github.com/wollydev24/Anilili/releases">All releases</a> ·
+  <a href="https://github.com/wollydev24/Anilili/issues">Report a problem</a>
 </p>
 
 ---
@@ -53,9 +50,9 @@ in one adaptive interface—without wrapping the whole experience in a website.
     <th width="33%">Details &amp; airing info</th>
   </tr>
   <tr>
-    <td><a href="showcase/mobile/home.webp"><img src="showcase/mobile/home.webp" width="100%" alt="Anilili mobile home with featured anime and continue watching" /></a></td>
-    <td><a href="showcase/mobile/discover.webp"><img src="showcase/mobile/discover.webp" width="100%" alt="Anilili mobile anime discovery and search screen" /></a></td>
-    <td><a href="showcase/mobile/details.webp"><img src="showcase/mobile/details.webp" width="100%" alt="Anilili mobile anime details screen" /></a></td>
+    <td><a href="showcase/mobile/home.png"><img src="showcase/mobile/home.png" width="100%" alt="Anilili mobile home with featured anime and continue watching" /></a></td>
+    <td><a href="showcase/mobile/discover.png"><img src="showcase/mobile/discover.png" width="100%" alt="Anilili mobile anime discovery and search screen" /></a></td>
+    <td><a href="showcase/mobile/details.png"><img src="showcase/mobile/details.png width="100%" alt="Anilili mobile anime details screen" /></a></td>
   </tr>
 </table>
 
@@ -115,7 +112,7 @@ sources. Availability can vary by title, language, region, and provider uptime.
 3. Launch Anilili. Signing in to AniList or MyAnimeList is optional.
 
 <p align="center">
-  <a href="https://github.com/kompoti121/Anilili/releases/latest/download/Anilili.apk">
+  <a href="https://github.com/wollydev24/Anilili/releases/latest/download/Anilili.apk">
     <img src="https://img.shields.io/badge/Download_Universal_APK-8979F2?style=for-the-badge&logo=android&logoColor=white" alt="Download universal APK" />
   </a>
 </p>
@@ -125,9 +122,9 @@ from another device, then open it with the system package installer.
 
 | APK | Best for |
 | --- | --- |
-| [Anilili.apk](https://github.com/kompoti121/Anilili/releases/latest/download/Anilili.apk) | **Recommended.** Universal build for phones, tablets, Android TV, and Fire TV. |
-| [Anilili_arm64-v8a.apk](https://github.com/kompoti121/Anilili/releases/latest/download/Anilili_arm64-v8a.apk) | Most modern 64-bit phones and TV devices. |
-| [Anilili_armeabi-v7a.apk](https://github.com/kompoti121/Anilili/releases/latest/download/Anilili_armeabi-v7a.apk) | Older 32-bit Android and Fire OS devices. |
+| [Anilili.apk](https://github.com/wollydev24/Anilili/releases/latest/download/Anilili.apk) | **Recommended.** Universal build for phones, tablets, Android TV, and Fire TV. |
+| [Anilili_arm64-v8a.apk](https://github.com/wollydev24/Anilili/releases/latest/download/Anilili_arm64-v8a.apk) | Most modern 64-bit phones and TV devices. |
+| [Anilili_armeabi-v7a.apk](https://github.com/wollydev24/Anilili/releases/latest/download/Anilili_armeabi-v7a.apk) | Older 32-bit Android and Fire OS devices. |
 
 **Compatibility:** Android 5.1 / Fire OS 5 (API 22) or newer.
 
@@ -141,7 +138,7 @@ the app's shared diagnostics ZIP when appropriate.
   <a href="https://t.me/anililiapk">
     <img src="https://img.shields.io/badge/Join_the_Telegram_Group-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Join the Telegram group" />
   </a>
-  <a href="https://github.com/kompoti121/Anilili/issues/new">
+  <a href="https://github.com/wollydev24/Anilili/issues/new">
     <img src="https://img.shields.io/badge/Report_a_Bug-24292F?style=for-the-badge&logo=github&logoColor=white" alt="Report a bug on GitHub" />
   </a>
 </p>
