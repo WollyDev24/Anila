@@ -249,31 +249,82 @@ function createWindow() {
   return win;
 }
 
-// Settings opens in its own window (per the account menu). Kept as a singleton
-// so re-opening focuses the existing one instead of stacking duplicates.
-function openSettingsWindow() {
-  if (settingsWindow && !settingsWindow.isDestroyed()) {
-    settingsWindow.show();
-    settingsWindow.focus();
-    return settingsWindow;
-  }
-  settingsWindow = new BrowserWindow(
+function spawnMainWindow() {
+  mainWindow = createWindow();
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+    // Hidden provider-bridge windows would keep the process alive, so quit
+    // explicitly instead of waiting for `window-all-closed`.
+    app.quit();
+  });
+  // Warm the Settings window once the main window has settled, so opening it
+  // later is instant without competing with startup for resources.
+  mainWindow.webContents.once("did-finish-load", () => {
+    setTimeout(() => prewarmSettingsWindow(), 800);
+  });
+  return mainWindow;
+}
+
+// Settings opens in its own window (per the account menu). It is created once
+// as a warm, hidden window and revealed on demand, so opening it is instant.
+function createSettingsWindow() {
+  const win = new BrowserWindow(
     baseWindowOptions({
       width: 760,
       height: 780,
       minWidth: 480,
       minHeight: 520,
       title: "Anila — Settings",
+      show: false,
       parent: mainWindow && !mainWindow.isDestroyed() ? mainWindow : undefined,
-      webPreferences: { additionalArguments: ["--anila-settings-window"] },
+      webPreferences: {
+        additionalArguments: ["--anila-settings-window"],
+        // Keep the hidden, warmed window painting so its first reveal is instant
+        // instead of waiting for a throttled renderer to catch up.
+        backgroundThrottling: false,
+      },
     }),
   );
-  applyWindowOpenHandler(settingsWindow);
-  settingsWindow.loadURL(originPath("settings.html"));
-  settingsWindow.on("closed", () => {
-    settingsWindow = null;
+  settingsWindow = win;
+  applyWindowOpenHandler(win);
+  win.loadURL(originPath("settings.html"));
+  win.on("closed", () => {
+    clearTimeout(win.__revealTimer);
+    if (settingsWindow === win) settingsWindow = null;
   });
-  return settingsWindow;
+  return win;
+}
+
+// Build the Settings window ahead of time (hidden, fully rendered) so the first
+// open doesn't wait on a cold renderer process.
+function prewarmSettingsWindow() {
+  if (settingsWindow && !settingsWindow.isDestroyed()) return settingsWindow;
+  return createSettingsWindow();
+}
+
+function openSettingsWindow() {
+  if (settingsWindow && !settingsWindow.isDestroyed()) {
+    // Warm window: refresh its contents (account/settings may have changed
+    // since it was rendered) and reveal immediately.
+    settingsWindow.webContents.send("settings:refresh");
+    revealSettingsWindow(settingsWindow);
+    return settingsWindow;
+  }
+  // Cold path (e.g. reopened right after being closed): reveal once painted.
+  const win = createSettingsWindow();
+  win.once("ready-to-show", () => revealSettingsWindow(win));
+  win.__revealTimer = setTimeout(() => revealSettingsWindow(win), 3000);
+  return win;
+}
+
+// Show (and focus) the settings window, restoring it if it was minimized.
+function revealSettingsWindow(win) {
+  if (!win || win.isDestroyed()) return;
+  clearTimeout(win.__revealTimer);
+  win.__revealed = true;
+  if (win.isMinimized()) win.restore();
+  win.show();
+  win.focus();
 }
 
 ipcMain.on("settings:open", () => openSettingsWindow());
@@ -314,13 +365,7 @@ async function start() {
     /* ignore */
   }
 
-  mainWindow = createWindow();
-  mainWindow.on("closed", () => {
-    mainWindow = null;
-    // Hidden provider-bridge windows would keep the process alive, so quit
-    // explicitly instead of waiting for `window-all-closed`.
-    app.quit();
-  });
+  spawnMainWindow();
 
   // Warm the Miruro bridge in the background so the first playback doesn't wait
   // on the Cloudflare challenge round-trip. Failures are non-fatal.
@@ -334,8 +379,8 @@ async function start() {
 app.whenReady().then(start);
 
 app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0 && port) {
-    createWindow();
+  if ((!mainWindow || mainWindow.isDestroyed()) && port) {
+    spawnMainWindow();
   }
 });
 

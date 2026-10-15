@@ -23,6 +23,12 @@ window.addEventListener("hashchange", async () => {
   paint();
 });
 
+// The desktop shell keeps this window warm (hidden) and asks it to refresh its
+// contents each time it's revealed, in case account/settings changes elsewhere.
+if (window.desktop?.onSettingsRefresh) {
+  window.desktop.onSettingsRefresh(() => paint());
+}
+
 (async function bootstrap() {
   await captureRedirectToken();
   paint();

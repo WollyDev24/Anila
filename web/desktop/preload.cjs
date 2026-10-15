@@ -6,6 +6,11 @@ contextBridge.exposeInMainWorld("desktop", {
   platform: process.platform,
   electron: process.versions.electron || "",
   openSettings: () => ipcRenderer.send("settings:open"),
+  onSettingsRefresh: (cb) => {
+    const handler = () => cb();
+    ipcRenderer.on("settings:refresh", handler);
+    return () => ipcRenderer.removeListener("settings:refresh", handler);
+  },
   discord: {
     defaultClientId: process.env.ANILA_DISCORD_CLIENT_ID || "1559288695616569464",
     configure: (cfg) => ipcRenderer.send("discord:configure", cfg),

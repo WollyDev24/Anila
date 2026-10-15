@@ -22,6 +22,8 @@
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.45);
   --topbar-h: 62px;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   color-scheme: dark;
 }
 
@@ -481,6 +483,11 @@ img {
   max-width: 820px;
   padding-top: 40px;
   min-height: 100vh;
+}
+/* The desktop Settings window is kept warm (hidden) in the background, so skip
+   the ambient glow animation there to keep the idle window cheap. */
+.settings-window .bg-glow {
+  animation: none;
 }
 
 .page-title {
@@ -2340,9 +2347,229 @@ img {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* ---------- motion ---------- */
+/* ------------------------------------------------------------------ */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@keyframes fade-up-sm {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.965);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes glow-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1.05);
+  }
+  to {
+    transform: translate3d(-2%, 1.5%, 0) scale(1.09);
+  }
+}
+
+/* Slow ambient drift on the background glow. */
+.bg-glow {
+  animation: glow-drift 26s ease-in-out infinite alternate;
+}
+
+/* Page entrance: each view's top-level blocks ease in on every route change. */
+#view > *:not(.rail):not(.grid) {
+  animation: fade-up-sm 0.5s var(--ease-out) backwards;
+}
+
+#view > *:nth-child(2):not(.rail, .grid) {
+  animation-delay: 0.04s;
+}
+#view > *:nth-child(3):not(.rail, .grid) {
+  animation-delay: 0.08s;
+}
+#view > *:nth-child(4):not(.rail, .grid) {
+  animation-delay: 0.12s;
+}
+#view > *:nth-child(5):not(.rail, .grid) {
+  animation-delay: 0.16s;
+}
+
+/* Settings page renders without entrance animation (in-app and settings window). */
+#view:has(> .settings-grid) > * {
+  animation: none !important;
+}
+
+/* Posters fan in with a short stagger. */
+.rail > .card,
+.grid > * {
+  animation: card-in 0.55s var(--ease-out) backwards;
+}
+
+.rail > .card:nth-child(1),
+.grid > *:nth-child(1) {
+  animation-delay: 0s;
+}
+.rail > .card:nth-child(2),
+.grid > *:nth-child(2) {
+  animation-delay: 0.03s;
+}
+.rail > .card:nth-child(3),
+.grid > *:nth-child(3) {
+  animation-delay: 0.06s;
+}
+.rail > .card:nth-child(4),
+.grid > *:nth-child(4) {
+  animation-delay: 0.09s;
+}
+.rail > .card:nth-child(5),
+.grid > *:nth-child(5) {
+  animation-delay: 0.12s;
+}
+.rail > .card:nth-child(6),
+.grid > *:nth-child(6) {
+  animation-delay: 0.15s;
+}
+.rail > .card:nth-child(7),
+.grid > *:nth-child(7) {
+  animation-delay: 0.18s;
+}
+.rail > .card:nth-child(8),
+.grid > *:nth-child(8) {
+  animation-delay: 0.21s;
+}
+.rail > .card:nth-child(9),
+.grid > *:nth-child(9) {
+  animation-delay: 0.24s;
+}
+.rail > .card:nth-child(10),
+.grid > *:nth-child(10) {
+  animation-delay: 0.27s;
+}
+.rail > .card:nth-child(11),
+.grid > *:nth-child(11) {
+  animation-delay: 0.3s;
+}
+.rail > .card:nth-child(12),
+.grid > *:nth-child(12) {
+  animation-delay: 0.33s;
+}
+
+/* Sidebar + header assemble once on load. */
+.sidebar .brand,
+.sidebar .nav a,
+.sidebar .account {
+  animation: slide-in-left 0.5s var(--ease-out) backwards;
+}
+.sidebar .nav a:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.sidebar .nav a:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.sidebar .nav a:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.sidebar .nav a:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.sidebar .account {
+  animation-delay: 0.25s;
+}
+.topbar {
+  animation: fade-up-sm 0.5s var(--ease-out) backwards;
+  animation-delay: 0.04s;
+}
+
+/* Hero copy eases in ahead of the artwork. */
+.hero .hero-title {
+  animation: fade-up 0.6s var(--ease-out) backwards;
+  animation-delay: 0.12s;
+}
+.hero .hero-meta {
+  animation: fade-up 0.6s var(--ease-out) backwards;
+  animation-delay: 0.2s;
+}
+.hero .hero-desc {
+  animation: fade-up 0.6s var(--ease-out) backwards;
+  animation-delay: 0.28s;
+}
+.hero .hero-actions {
+  animation: fade-up 0.6s var(--ease-out) backwards;
+  animation-delay: 0.36s;
+}
+
+/* Setting panels and key media pop in. */
+.detail-cover {
+  animation: pop-in 0.5s var(--ease-spring) backwards;
+  animation-delay: 0.1s;
+}
+.profile-avatar {
+  animation: pop-in 0.5s var(--ease-spring) backwards;
+  animation-delay: 0.15s;
+}
+
+/* ---------- micro-interactions ---------- */
+.card .poster img {
+  transition: transform 0.5s var(--ease-out);
+}
+.card:hover .poster img {
+  transform: scale(1.08);
+}
+
+.section-head .more {
+  transition: color 0.15s, transform 0.2s var(--ease-out);
+}
+.section-head .more:hover {
+  transform: translateX(3px);
+}
+
+.nav a .ico {
+  transition: opacity 0.15s, transform 0.2s var(--ease-out), color 0.15s;
+}
+.nav a:hover .ico {
+  transform: translateX(2px);
+}
+
+.btn {
+  transition: transform 0.18s var(--ease-out), box-shadow 0.25s, background 0.15s,
+    border-color 0.15s, opacity 0.15s;
+}
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+}
+.btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.001ms !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.001ms !important;
+    transition-delay: 0ms !important;
   }
 }
