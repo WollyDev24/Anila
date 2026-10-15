@@ -97,7 +97,7 @@ cd web
 ```
 
 The desktop build adds **Discord Rich Presence** (what you're watching, with
-cover art), a dedicated settings window, and an origin-stable port so your
+cover art) and an origin-stable port so your
 sign-in, library, and progress persist between launches. See
 [`web/README.md`](web/README.md) for providers, the Miruro bridge, caching, and
 troubleshooting.
