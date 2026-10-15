@@ -126,22 +126,20 @@ function setActiveNav(route) {
 function updateAccountButton() {
   const viewer = getViewer();
   const signedIn = Boolean(getToken());
-  if (signedIn && viewer?.avatar?.large) {
-    accountBtn.innerHTML = `<img src="${viewer.avatar.large}" alt="${escapeHtml(viewer.name || "")}" />`;
-  } else if (signedIn) {
-    accountBtn.innerHTML = `<span class="account-avatar">${escapeHtml(
-      (viewer?.name || "?").slice(0, 1).toUpperCase(),
-    )}</span>`;
-  } else {
-    accountBtn.innerHTML = `<span class="account-avatar">?</span>`;
-  }
+  const avatar = signedIn && viewer?.avatar?.large
+    ? `<img src="${viewer.avatar.large}" alt="" />`
+    : `<span class="account-avatar">${escapeHtml(
+        (signedIn ? viewer?.name || "?" : "?").slice(0, 1).toUpperCase(),
+      )}</span>`;
+  const label = signedIn ? viewer?.name || "AniList user" : "Sign in";
+  accountBtn.innerHTML = `${avatar}<span class="account-name">${escapeHtml(label)}</span>`;
   accountBtn.title = signedIn ? `Signed in as ${viewer?.name || "AniList user"}` : "Account";
 
   const name = signedIn ? viewer?.name || "AniList user" : "Not signed in";
-  const avatar = signedIn && viewer?.avatar?.large
+  const menuAvatar = signedIn && viewer?.avatar?.large
     ? `<img src="${viewer.avatar.large}" alt="" />`
     : `<span class="account-menu-avatar">${escapeHtml((signedIn ? name : "?").slice(0, 1).toUpperCase())}</span>`;
-  accountMenuHead.innerHTML = `<span class="account-menu-ava">${avatar}</span><span class="account-menu-name">${escapeHtml(
+  accountMenuHead.innerHTML = `<span class="account-menu-ava">${menuAvatar}</span><span class="account-menu-name">${escapeHtml(
     name,
   )}</span>`;
   if (accountSignin) accountSignin.hidden = signedIn;
