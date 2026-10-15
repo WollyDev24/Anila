@@ -31,16 +31,6 @@
 
 ---
 
-## Made for every Android screen
-
-Anila is a native Kotlin and Jetpack Compose anime client for phones, tablets, Android TV,
-and Fire TV. It combines discovery, streaming, downloads, list management, and progress sync
-in one adaptive interface—without wrapping the whole experience in a website.
-
-| Watch your way | Your anime, in sync | Built for the couch |
-| --- | --- | --- |
-| Native Media3 playback, multiple sources, subtitles, skip intro/outro, quality selection, PiP, casting controls, and offline episodes. | Sign in with AniList or MyAnimeList, update your list from the player, resume episodes, and optionally sync watched progress. | Large-screen layouts, D-pad navigation, visible focus states, TV-safe spacing, and player controls designed for a remote. |
-
 ## Mobile experience
 
 <table>
@@ -61,23 +51,23 @@ in one adaptive interface—without wrapping the whole experience in a website.
   <a href="showcase/mobile/player.webp"><img src="showcase/mobile/player.webp" width="92%" alt="Anila native mobile video player controls" /></a>
 </p>
 
-## TV experience
+<!--## TV experience-->
 
-<table>
-  <tr>
-    <th width="50%">A cinematic, remote-friendly home</th>
-    <th width="50%">Details and episodes side by side</th>
-  </tr>
-  <tr>
-    <td><a href="showcase/tv/home.webp"><img src="showcase/tv/home.webp" width="100%" alt="Anila home screen on Android TV" /></a></td>
-    <td><a href="showcase/tv/details.webp"><img src="showcase/tv/details.webp" width="100%" alt="Anila anime details and episode list on Android TV" /></a></td>
-  </tr>
-</table>
+<!--<table>-->
+<!--  <tr>-->
+<!--    <th width="50%">A cinematic, remote-friendly home</th>-->
+<!--    <th width="50%">Details and episodes side by side</th>-->
+<!--  </tr>-->
+<!--  <tr>-->
+<!--    <td><a href="showcase/tv/home.webp"><img src="showcase/tv/home.webp" width="100%" alt="Anila home screen on Android TV" /></a></td>-->
+<!--    <td><a href="showcase/tv/details.webp"><img src="showcase/tv/details.webp" width="100%" alt="Anila anime details and episode list on Android TV" /></a></td>-->
+<!--  </tr>-->
+<!--</table>-->
 
-<p align="center">
-  <strong>Fullscreen playback designed around D-pad controls</strong><br /><br />
-  <a href="showcase/tv/player.webp"><img src="showcase/tv/player.webp" width="92%" alt="Anila fullscreen Android TV player controls" /></a>
-</p>
+<!--<p align="center">-->
+<!--  <strong>Fullscreen playback designed around D-pad controls</strong><br /><br />-->
+<!--  <a href="showcase/tv/player.webp"><img src="showcase/tv/player.webp" width="92%" alt="Anila fullscreen Android TV player controls" /></a>-->
+<!--</p>-->
 
 ## Highlights
 
@@ -117,31 +107,31 @@ sources. Availability can vary by title, language, region, and provider uptime.
   </a>
 </p>
 
-For a TV or Fire TV device, download the APK with a TV browser/Downloader app or transfer it
-from another device, then open it with the system package installer.
+<!--For a TV or Fire TV device, download the APK with a TV browser/Downloader app or transfer it-->
+<!--from another device, then open it with the system package installer.-->
 
-| APK | Best for |
-| --- | --- |
-| [Anila.apk](https://github.com/wollydev24/Anila/releases/latest/download/Anila.apk) | **Recommended.** Universal build for phones, tablets, Android TV, and Fire TV. |
-| [Anila_arm64-v8a.apk](https://github.com/wollydev24/Anila/releases/latest/download/Anila_arm64-v8a.apk) | Most modern 64-bit phones and TV devices. |
-| [Anila_armeabi-v7a.apk](https://github.com/wollydev24/Anila/releases/latest/download/Anila_armeabi-v7a.apk) | Older 32-bit Android and Fire OS devices. |
+<!--| APK | Best for |-->
+<!--| --- | --- |-->
+<!--| [Anila.apk](https://github.com/wollydev24/Anila/releases/latest/download/Anila.apk) | **Recommended.** Universal build for phones, tablets, Android TV, and Fire TV. |-->
+<!--| [Anila_arm64-v8a.apk](https://github.com/wollydev24/Anila/releases/latest/download/Anila_arm64-v8a.apk) | Most modern 64-bit phones and TV devices. |-->
+<!--| [Anila_armeabi-v7a.apk](https://github.com/wollydev24/Anila/releases/latest/download/Anila_armeabi-v7a.apk) | Older 32-bit Android and Fire OS devices. |-->
 
-**Compatibility:** Android 5.1 / Fire OS 5 (API 22) or newer.
+<!--**Compatibility:** Android 5.1 / Fire OS 5 (API 22) or newer.-->
 
-## Community and support
+<!--## Community and support-->
 
-The Telegram group is the quickest place for release announcements, help, feedback, and
-provider-status discussions. For reproducible bugs, you can also open a GitHub issue and attach
-the app's shared diagnostics ZIP when appropriate.
+<!--The Telegram group is the quickest place for release announcements, help, feedback, and-->
+<!--provider-status discussions. For reproducible bugs, you can also open a GitHub issue and attach-->
+<!--the app's shared diagnostics ZIP when appropriate.-->
 
-<p align="center">
-  <a href="https://t.me/Anilaapk">
-    <img src="https://img.shields.io/badge/Join_the_Telegram_Group-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Join the Telegram group" />
-  </a>
-  <a href="https://github.com/wollydev24/Anila/issues/new">
-    <img src="https://img.shields.io/badge/Report_a_Bug-24292F?style=for-the-badge&logo=github&logoColor=white" alt="Report a bug on GitHub" />
-  </a>
-</p>
+<!--<p align="center">-->
+<!--  <a href="https://t.me/Anilaapk">-->
+<!--    <img src="https://img.shields.io/badge/Join_the_Telegram_Group-229ED9?style=for-the-badge&logo=telegram&logoColor=white" alt="Join the Telegram group" />-->
+<!--  </a>-->
+<!--  <a href="https://github.com/wollydev24/Anila/issues/new">-->
+<!--    <img src="https://img.shields.io/badge/Report_a_Bug-24292F?style=for-the-badge&logo=github&logoColor=white" alt="Report a bug on GitHub" />-->
+<!--  </a>-->
+<!--</p>-->
 
 ## Build from source
 
