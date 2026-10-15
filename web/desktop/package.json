@@ -1,19 +1,80 @@
 {
   "name": "anila-desktop",
   "version": "1.0.0",
-  "description": "Anila desktop wrapper",
+  "description": "Anila — anime tracker and streaming desktop client",
+  "author": {
+    "name": "WollyDev24",
+    "email": "wollywoll8844@gmail.com"
+  },
+  "homepage": "https://github.com/WollyDev24/Anila",
+  "license": "MIT",
   "type": "module",
   "main": "main.mjs",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "build": "electron-builder",
+    "build:linux": "electron-builder --linux",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac"
   },
   "devDependencies": {
-    "electron": "^37.0.0"
+    "electron": "^37.0.0",
+    "electron-builder": "^25.1.8"
   },
   "allowScripts": {
     "electron@37.10.3": true
   },
   "dependencies": {
     "@xhayper/discord-rpc": "^1.5.1"
+  },
+  "build": {
+    "appId": "com.wollydev.anila",
+    "productName": "Anila",
+    "copyright": "Copyright © 2026 WollyDev24",
+    "directories": {
+      "output": "release",
+      "buildResources": "build-res"
+    },
+    "files": [
+      "main.mjs",
+      "preload.cjs",
+      "probe-preload.cjs",
+      "bridge.mjs",
+      "oauth.mjs",
+      "rpc.mjs",
+      "icon.png",
+      "package.json"
+    ],
+    "extraResources": [
+      { "from": "../server", "to": "server" },
+      { "from": "../public", "to": "public" }
+    ],
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "category": "AudioVideo",
+      "icon": "build-res/icon.png",
+      "maintainer": "WollyDev24 <wollywoll8844@gmail.com>",
+      "desktop": {
+        "Name": "Anila",
+        "Comment": "Anime tracker and streaming client",
+        "Categories": "AudioVideo;Video;Player;"
+      }
+    },
+    "win": {
+      "target": ["nsis"],
+      "icon": "build-res/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "Anila"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "category": "public.app-category.entertainment",
+      "icon": "build-res/icon.png"
+    }
   }
 }

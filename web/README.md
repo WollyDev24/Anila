@@ -19,6 +19,32 @@ cd web
 
 Open the printed URL.
 
+## Download prebuilt binaries
+
+Prebuilt installers are built by GitHub Actions (see
+[`.github/workflows/build-desktop.yml`](../.github/workflows/build-desktop.yml))
+and attached to [Releases](https://github.com/WollyDev24/Anila/releases):
+
+- **Linux** — `Anila-<version>.AppImage` (portable, `chmod +x` and run) or
+  `anila-desktop_<version>_amd64.deb` (install with your package manager).
+- **Windows** — `Anila Setup <version>.exe` (installer; per-user, choose the
+  install folder).
+- **macOS** — `Anila-<version>.dmg` (unsigned: on first launch, right-click →
+  Open, or allow it in System Settings → Privacy & Security).
+
+To build them yourself instead of using the launcher:
+
+```bash
+cd web/desktop
+npm install
+npm run build:linux   # or build:win / build:mac (mac requires macOS)
+# output: web/desktop/release/
+```
+
+`npm run pack` produces an unpacked app in `release/` for quick local testing.
+The packaged app bundles the Node server and static assets as extra resources
+(`resources/server`, `resources/public`), so it runs standalone.
+
 ## Desktop app (standalone window)
 
 Run Anila in its own window — no external browser needed. It launches the same
@@ -48,6 +74,27 @@ Source lives in `web/desktop/` (`main.mjs`, `preload.cjs`, `electron` dev
 dependency). AniList's OAuth redirect to `http://localhost` is intercepted and
 played back against the app's own origin so the token lands where the rest of
 the app reads it.
+
+### Prebuilt binaries
+
+Installable builds are produced by CI (`.github/workflows/build-desktop.yml`):
+
+- **Linux** — `.AppImage` (portable; `chmod +x` and run) and `.deb`.
+- **Windows** — NSIS installer (`.exe`).
+- **macOS** — `.dmg` (unsigned; right-click → *Open* the first time).
+
+Download the latest from the **Releases** page, or trigger the workflow manually
+(*Actions → Build desktop binaries → Run workflow*) and grab the artifacts. To
+build locally for your current OS:
+
+```bash
+cd web/desktop
+npm install
+npm run build          # current OS; or build:linux / build:win / build:mac
+```
+
+Output lands in `web/desktop/release/`. macOS packages can only be built on
+macOS.
 
 ### Discord Rich Presence (desktop)
 

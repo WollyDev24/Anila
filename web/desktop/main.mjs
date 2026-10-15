@@ -3,14 +3,25 @@
 // its own window, so no external browser is needed. Same code, same APIs.
 import { app, BrowserWindow, ipcMain, session, shell, webContents } from "electron";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { startAppServer } from "../server/server.mjs";
-import { setTransport } from "../server/providers/util.mjs";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { wireOAuthRedirects } from "./oauth.mjs";
 import { DiscordPresence } from "./rpc.mjs";
 import { ProviderBridge } from "./bridge.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// In a packaged build the server + static assets ship as extra resources
+// (resources/server, resources/public). During development they're siblings of
+// this folder (web/server, web/public). Resolve once, then load from there.
+const SERVER_DIR = app.isPackaged
+  ? path.join(process.resourcesPath, "server")
+  : path.join(__dirname, "..", "server");
+const { startAppServer } = await import(
+  pathToFileURL(path.join(SERVER_DIR, "server.mjs")).href
+);
+const { setTransport } = await import(
+  pathToFileURL(path.join(SERVER_DIR, "providers", "util.mjs")).href
+);
 
 // Containers/VMs often block the Chromium sandbox; opt in explicitly.
 if (process.env.ANILA_DESKTOP_NO_SANDBOX) {

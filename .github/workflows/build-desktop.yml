@@ -1,0 +1,79 @@
+name: Build desktop binaries
+
+# Produces installable binaries for Linux, Windows and macOS.
+#
+# - Run manually (Actions → Build desktop binaries → Run workflow) to get
+#   downloadable artifacts.
+# - Push a version tag (e.g. `v1.0.0`) to also attach them to a GitHub Release.
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Linux (AppImage + deb)
+            target: --linux
+            artifact: anila-linux
+          - os: windows-latest
+            name: Windows (installer)
+            target: --win
+            artifact: anila-windows
+          - os: macos-latest
+            name: macOS (dmg)
+            target: --mac
+            artifact: anila-macos
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: web/desktop/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web/desktop
+        run: npm ci
+
+      - name: Build
+        working-directory: web/desktop
+        # Unsigned builds: skip macOS code-signing/notarization discovery.
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+        run: npx electron-builder ${{ matrix.target }} --publish never
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          if-no-files-found: error
+          path: |
+            web/desktop/release/*.AppImage
+            web/desktop/release/*.deb
+            web/desktop/release/*.exe
+            web/desktop/release/*.dmg
+            web/desktop/release/*.zip
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            web/desktop/release/*.AppImage
+            web/desktop/release/*.deb
+            web/desktop/release/*.exe
+            web/desktop/release/*.dmg
+            web/desktop/release/*.zip
