@@ -46,10 +46,10 @@
   </tr>
 </table>
 
-<p align="center">
-  <strong>Native player with episodes, captions, casting, fullscreen, and list controls</strong><br /><br />
-  <a href="showcase/mobile/player.webp"><img src="showcase/mobile/player.webp" width="92%" alt="Anila native mobile video player controls" /></a>
-</p>
+<!--<p align="center">-->
+<!--  <strong>Native player with episodes, captions, casting, fullscreen, and list controls</strong><br /><br />-->
+<!--  <a href="showcase/mobile/player.webp"><img src="showcase/mobile/player.webp" width="92%" alt="Anila native mobile video player controls" /></a>-->
+<!--</p>-->
 
 <!--## TV experience-->
 
@@ -95,17 +95,17 @@ sources. Availability can vary by title, language, region, and provider uptime.
 
 </details>
 
-## Install
+<!--## Install-->
 
-1. Download the **Universal APK** using the button below.
-2. Open the APK and allow installation from your browser or file manager if Android asks.
-3. Launch Anila. Signing in to AniList or MyAnimeList is optional.
+<!--1. Download the **Universal APK** using the button below.-->
+<!--2. Open the APK and allow installation from your browser or file manager if Android asks.-->
+<!--3. Launch Anila. Signing in to AniList or MyAnimeList is optional.-->
 
-<p align="center">
-  <a href="https://github.com/wollydev24/Anila/releases/latest/download/Anila.apk">
-    <img src="https://img.shields.io/badge/Download_Universal_APK-8979F2?style=for-the-badge&logo=android&logoColor=white" alt="Download universal APK" />
-  </a>
-</p>
+<!--<p align="center">-->
+<!--  <a href="https://github.com/wollydev24/Anila/releases/latest/download/Anila.apk">-->
+<!--    <img src="https://img.shields.io/badge/Download_Universal_APK-8979F2?style=for-the-badge&logo=android&logoColor=white" alt="Download universal APK" />-->
+<!--  </a>-->
+<!--</p>-->
 
 <!--For a TV or Fire TV device, download the APK with a TV browser/Downloader app or transfer it-->
 <!--from another device, then open it with the system package installer.-->
