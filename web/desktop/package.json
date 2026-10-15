@@ -1,0 +1,19 @@
+{
+  "name": "anila-desktop",
+  "version": "1.0.0",
+  "description": "Anila desktop wrapper",
+  "type": "module",
+  "main": "main.mjs",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^37.0.0"
+  },
+  "allowScripts": {
+    "electron@37.10.3": true
+  },
+  "dependencies": {
+    "@xhayper/discord-rpc": "^1.5.1"
+  }
+}
