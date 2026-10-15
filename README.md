@@ -5,13 +5,16 @@
 <h1 align="center">Anila</h1>
 
 <p align="center">
-  <strong>Anime, beautifully native on Android.</strong><br />
+  <strong>Anime, beautifully native on Android — with a companion desktop and web client.</strong><br />
   Fast multi-source playback, offline downloads, AniList/MAL sync, and a remote-first TV experience.
 </p>
 
 <p align="center">
   <a href="https://github.com/wollydev24/Anila/releases/latest/download/Anila.apk">
     <img src="https://img.shields.io/badge/Download_APK-8979F2?style=for-the-badge&logo=android&logoColor=white" alt="Download Anila APK" />
+  </a>
+  <a href="https://github.com/wollydev24/Anila/releases/latest">
+    <img src="https://img.shields.io/badge/Download_Desktop-8979F2?style=for-the-badge&logo=electron&logoColor=white" alt="Download Anila for desktop" />
   </a>
 </p>
 
@@ -21,6 +24,7 @@
   <img src="https://img.shields.io/badge/Android-5.1%2B-3DDC84?style=flat-square&logo=android&logoColor=white" alt="Android 5.1 and newer" />
   <img src="https://img.shields.io/badge/Kotlin-Native_UI-7F52FF?style=flat-square&logo=kotlin&logoColor=white" alt="Built with Kotlin" />
   <img src="https://img.shields.io/badge/Android_TV-Fire_TV-FF9900?style=flat-square&logo=amazonfiretv&logoColor=white" alt="Android TV and Fire TV" />
+  <img src="https://img.shields.io/badge/Desktop-Linux_|_Windows_|_macOS-8979F2?style=flat-square&logo=electron&logoColor=white" alt="Linux, Windows and macOS desktop client" />
 </p>
 
 <p align="center">
@@ -69,6 +73,38 @@
 <!--  <a href="showcase/tv/player.webp"><img src="showcase/tv/player.webp" width="92%" alt="Anila fullscreen Android TV player controls" /></a>-->
 <!--</p>-->
 
+## Desktop and web client
+
+Anila also runs as a companion client in your browser or as a standalone
+[Electron](https://www.electronjs.org/) desktop app — the same providers and the
+same AniList sign-in, no Android device required. The frontend is plain
+JavaScript and the server is a dependency-free Node.js proxy, so there is no
+build step.
+
+| Platform | Download |
+| --- | --- |
+| **Linux** | `Anila-<version>.AppImage` (portable) · `anila-desktop_<version>_amd64.deb` |
+| **Windows** | `Anila Setup <version>.exe` |
+| **macOS** | `Anila-<version>.dmg` (Apple Silicon, unsigned — right-click → Open the first time) |
+
+Grab them from [Releases](https://github.com/wollydev24/Anila/releases), or run it
+from source with **Node.js 18+**:
+
+```bash
+cd web
+./start.sh            # http://127.0.0.1:8787  (browser)
+./start-desktop.sh    # standalone Electron window
+```
+
+The desktop build adds **Discord Rich Presence** (what you're watching, with
+cover art), a dedicated settings window, and an origin-stable port so your
+sign-in, library, and progress persist between launches. See
+[`web/README.md`](web/README.md) for providers, the Miruro bridge, caching, and
+troubleshooting.
+
+> ⚠️ **Residential IP required:** Cloudflare-protected providers block datacenter
+> IPs, so playback will not work from a VPS or cloud shell.
+
 ## Highlights
 
 - **Multiple streaming sources:** automatic discovery and fallback across Miruro and
@@ -85,6 +121,8 @@
   tablets, landscape playback, and older low-memory devices.
 - **Useful diagnostics:** shareable support reports containing app, playback, device, network,
   and recent diagnostic information when troubleshooting is needed.
+- **Companion desktop and web client:** the same catalog, providers, and AniList sync in a
+  [browser or Electron window](#desktop-and-web-client), with Discord Rich Presence on desktop.
 
 <details>
   <summary><strong>Streaming providers</strong></summary>
@@ -166,6 +204,21 @@ The in-app updater depends on these release asset names:
 The underscore before the ABI is intentional. It keeps the universal APK first in GitHub's asset
 ordering so older app versions do not accidentally download an incompatible architecture build.
 
+### Desktop and web client
+
+The `web/` client needs only **Node.js 18+** to run (`./start.sh`). To produce installers,
+use electron-builder:
+
+```bash
+cd web/desktop
+npm install
+npm run build          # current OS; or build:linux / build:win / build:mac
+```
+
+Output lands in `web/desktop/release/`; macOS packages can only be built on macOS. The
+[`build-desktop.yml`](.github/workflows/build-desktop.yml) workflow builds all three platforms and
+attaches the results to a GitHub release on `v*` tags.
+
 ### Project map
 
 | Path | Purpose |
@@ -173,9 +226,12 @@ ordering so older app versions do not accidentally download an incompatible arch
 | `app/src/main/java/com/miruronative/data` | Models, provider catalog, storage, and sync |
 | `app/src/main/java/com/miruronative/data/remote` | AniList, MAL, Miruro, and provider clients |
 | `app/src/main/java/com/miruronative/ui` | Compose screens and player UI |
+| `web/` | Browser + Electron desktop client (Node server, frontend, desktop wrapper) |
+| `web/server/providers` | Node implementations of the Miruro, AniBD, and Senshi providers |
 | `showcase/mobile` and `showcase/tv` | Optimized screenshots used in this README |
 | `docs/` | GitHub Pages website and protocol notes |
 | `docs/PIPE_PROTOCOL.md` | Miruro pipe protocol documentation |
+| `.github/workflows/build-desktop.yml` | Cross-platform desktop binary builds (Linux/Windows/macOS) |
 
 </details>
 
