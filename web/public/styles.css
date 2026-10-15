@@ -139,8 +139,6 @@ img {
   padding: 16px 14px 14px;
   background: linear-gradient(180deg, rgba(17, 17, 26, 0.86), rgba(9, 9, 14, 0.86));
   border-right: 1px solid var(--line);
-  backdrop-filter: blur(var(--blur)) saturate(140%);
-  -webkit-backdrop-filter: blur(var(--blur)) saturate(140%);
 }
 
 .brand {
@@ -759,6 +757,9 @@ img {
   padding: 68px 22px 44px;
   margin: -62px -22px -28px;
   scroll-snap-type: x proximity;
+  /* Keep scroll-snap from eating the horizontal padding that reserves room for
+     the cover glow, which would clip the first/last cover's glow at the edge. */
+  scroll-padding-inline: 22px;
   scrollbar-width: none;
 }
 
@@ -2280,6 +2281,11 @@ img {
   }
   .view {
     padding: 16px 16px 96px;
+  }
+  .rail {
+    padding-inline: 16px;
+    margin-inline: -16px;
+    scroll-padding-inline: 16px;
   }
   .hero {
     min-height: 380px;
