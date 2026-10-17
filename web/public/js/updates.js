@@ -89,9 +89,9 @@ export function updateStatusText(state = {}) {
 export function updateActions(state = {}) {
   const status = state.status || "idle";
   return {
-    check: status !== "checking" && status !== "downloading" && status !== "downloaded",
+    check: status === "idle" || status === "up-to-date" || status === "error" || (status === "available" && !state.canAutoInstall),
     download: status === "available" && !state.canAutoInstall,
-    install: status === "downloaded" && !!state.canAutoInstall,
-    progress: status === "downloading" || (status === "available" && !!state.canAutoInstall),
+    install: status === "downloaded",
+    progress: status === "downloading",
   };
 }

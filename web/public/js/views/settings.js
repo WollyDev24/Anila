@@ -294,7 +294,8 @@ function wireUpdatesPanel(container) {
       statusEl.dataset.status = s.status;
     }
     if (checkBtn) {
-      checkBtn.disabled = !actions.check;
+      checkBtn.hidden = !actions.check;
+      checkBtn.disabled = s.status === "checking";
       checkBtn.textContent = s.status === "checking" ? "Checking…" : "Check now";
     }
     if (downloadBtn) downloadBtn.hidden = !actions.download;
