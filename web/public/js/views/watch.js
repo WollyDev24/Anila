@@ -20,7 +20,7 @@ async function desktopDownloadCurrent() {
   const stream = (current.sourcesResult?.streams || [])[Number(shellDropdowns.streamSelect?.value || 0)];
   if (!stream) { toast("No stream selected."); return; }
   const type = (stream.type || "").toLowerCase();
-  if (type !== "mp4" && !/\\.mp4($|\\?)/i.test(stream.url || "")) { toast("Download only supports direct MP4 streams.", "error"); return; }
+  if (type === "embed") { toast("Download not supported for embedded players.", "error"); return; }
   const title = safeName(titleOf(current.media));
   const ep = current.episode?.number != null ? String(current.episode.number) : String(current.episodeNumber || "");
   const base = title + " - Episode " + ep;
