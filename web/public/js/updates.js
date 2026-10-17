@@ -89,6 +89,14 @@ export function updateStatusText(state = {}) {
 export function updateActions(state = {}) {
   const status = state.status || "idle";
   return {
+    check: status === "idle" || status === "up-to-date" || status === "error",
+    download: status === "available" && !state.canAutoInstall,
+    install: status === "downloaded",
+    progress: status === "downloading",
+  };
+}) {
+  const status = state.status || "idle";
+  return {
     check: status === "idle" || status === "up-to-date" || status === "error" || (status === "available" && !state.canAutoInstall),
     download: status === "available" && !state.canAutoInstall,
     install: status === "downloaded",
