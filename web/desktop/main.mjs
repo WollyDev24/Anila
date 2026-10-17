@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import fs from "node:fs";
 import https from "node:https";
 import http from "node:http";
+import { spawn } from "node:child_process";
 import { wireOAuthRedirects } from "./oauth.mjs";
 import { DiscordPresence } from "./rpc.mjs";
 import { ProviderBridge } from "./bridge.mjs";
@@ -168,6 +169,53 @@ function vttToSrt(vtt) {
   return s;
 }
 
+
+async function muxToMp4({ videoUrl, subtitlePath, outPath, onProgress }) {
+  return new Promise((resolve, reject) => {
+    const ffmpegPath = process.env.ANILA_FFMPEG || "/usr/bin/ffmpeg";
+    const args = ["-y"];
+    if (videoUrl.startsWith("http")) {
+      args.push("-user_agent", "Anila Desktop");
+    }
+    args.push("-i", videoUrl);
+    if (subtitlePath) {
+      args.push("-i", subtitlePath);
+    }
+    args.push("-c:v", "copy", "-c:a", "copy");
+    if (subtitlePath) {
+      args.push("-c:s", "mov_text");
+      args.push("-metadata:s:s:0", "language=en");
+      args.push("-disposition:s:0", "default");
+    }
+    args.push("-map", "0:v:0", "-map", "0:a:0?");
+    if (subtitlePath) args.push("-map", "1:s:0?");
+    args.push("-shortest");
+    args.push("-movflags", "+faststart");
+    args.push(outPath);
+
+    const proc = spawn(ffmpegPath, args, { stdio: ["ignore", "pipe", "pipe"] });
+    let durationMs = 0;
+    proc.stderr.on("data", (chunk) => {
+      const text = chunk.toString("utf8");
+      const d = text.match(/Duration:\\s*(\\d+):(\\d{2}):(\\d{2})\\.(\\d+)/);
+      if (d) {
+        durationMs = (parseInt(d[1])*3600 + parseInt(d[2])*60 + parseInt(d[3])) * 1000 + parseInt(d[4].padEnd(3,"0"));
+      }
+      const t = text.match(/time=(\\d+):(\\d{2}):(\\d{2})\\.(\\d+)/);
+      if (t && durationMs > 0 && onProgress) {
+        const cur = (parseInt(t[1])*3600 + parseInt(t[2])*60 + parseInt(t[3])) * 1000 + parseInt(t[4].padEnd(3,"0"));
+        onProgress(Math.min(100, Math.round((cur / durationMs) * 100)));
+      }
+    });
+    proc.on("error", reject);
+    proc.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(`ffmpeg exited with code ${code}`));
+    });
+  });
+}
+
+
 function downloadHttp(url, out, onProgress) {
   const client = url.startsWith("https:") ? https : http;
   return new Promise((resolve, reject) => {
@@ -249,12 +297,10 @@ ipcMain.handle("downloads:download", async (e, payload = {}) => {
   if (!filePath || !videoUrl) throw new Error("Missing filePath or videoUrl");
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  await downloadHttp(videoUrl, filePath, (pct) => {
-    try { e.sender.send("downloads:progress", { filePath, pct }); } catch {}
-  });
+  let subPath = null;
   if (subtitleUrl) {
     try {
-      const subPath = filePath.replace(/\.[^.]+$/, `.${subtitleLang || "en"}.srt`);
+      subPath = filePath.replace(/\.[^.]+$/, `.${subtitleLang || "en"}.srt`);
       const tmp = await new Promise((resolve, reject) => {
         const client = subtitleUrl.startsWith("https:") ? https : http;
         const req = client.get(subtitleUrl, (res) => {
@@ -269,7 +315,14 @@ ipcMain.handle("downloads:download", async (e, payload = {}) => {
       fs.writeFileSync(subPath, vttToSrt(tmp));
     } catch (err) {
       console.warn(`Anila desktop: subtitle download failed (${err.message})`);
+      subPath = null;
     }
+  }
+  await muxToMp4({ videoUrl, subtitlePath: subPath, outPath: filePath, onProgress: (pct) => {
+    try { e.sender.send("downloads:progress", { filePath, pct }); } catch {}
+  }});
+  if (subPath && fs.existsSync(subPath) && process.platform !== "win32") {
+    // keep separate .srt too? user asked for separate; we have it. OK.
   }
   return { ok: true };
 });
