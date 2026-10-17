@@ -33,10 +33,19 @@
 
 html,
 body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="140" height="140"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/%3E%3CfeColorMatrix type="saturate" values="0"/%3E%3CfeComponentTransfer%3E%3CfeFuncA type="table" tableValues="0 0 0 0.03 0.03"/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width="140" height="140" filter="url(%23n)" opacity="0.25"/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
   margin: 0;
   padding: 0;
-  background: var(--bg);
   color: var(--text);
+  background-color: var(--bg);
+  background-image: radial-gradient(1200px 800px at 50% 0%, rgba(124,92,255,0.08) 0%, rgba(0,0,0,0.2) 70%), url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="180" height="180"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/%3E%3CfeColorMatrix type="saturate" values="0"/%3E%3CfeComponentTransfer%3E%3CfeFuncA type="table" tableValues="0 0 0 0.02 0.02"/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width="180" height="180" filter="url(%23n)" opacity="0.2"/%3E%3C/svg%3E');
+  background-size: 180px 180px, 180px 180px;
+  background-position: 0 0, 0 0;
+  background-attachment: fixed, fixed;
+  background-blend-mode: soft-light;
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
   font-size: 15px;
   line-height: 1.5;
@@ -45,6 +54,10 @@ body {
 }
 
 body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="140" height="140"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/%3E%3CfeColorMatrix type="saturate" values="0"/%3E%3CfeComponentTransfer%3E%3CfeFuncA type="table" tableValues="0 0 0 0.03 0.03"/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width="140" height="140" filter="url(%23n)" opacity="0.25"/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
   min-height: 100vh;
   overflow-x: hidden;
 }
@@ -712,6 +725,10 @@ img {
 }
 
 .hero-body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="140" height="140"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/%3E%3CfeColorMatrix type="saturate" values="0"/%3E%3CfeComponentTransfer%3E%3CfeFuncA type="table" tableValues="0 0 0 0.03 0.03"/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width="140" height="140" filter="url(%23n)" opacity="0.25"/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
   position: relative;
   z-index: 2;
   padding: 40px 42px;
@@ -1061,6 +1078,10 @@ img {
 }
 
 .detail-hero-body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="140" height="140"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/%3E%3CfeColorMatrix type="saturate" values="0"/%3E%3CfeComponentTransfer%3E%3CfeFuncA type="table" tableValues="0 0 0 0.03 0.03"/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width="140" height="140" filter="url(%23n)" opacity="0.25"/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
   position: relative;
   z-index: 2;
   display: flex;
@@ -2414,12 +2435,20 @@ img {
     min-height: 380px;
   }
   .hero-body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="140" height="140"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/%3E%3CfeColorMatrix type="saturate" values="0"/%3E%3CfeComponentTransfer%3E%3CfeFuncA type="table" tableValues="0 0 0 0.03 0.03"/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width="140" height="140" filter="url(%23n)" opacity="0.25"/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
     padding: 24px;
   }
   .hero-title {
     font-size: 30px;
   }
   .detail-hero-body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="140" height="140"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/%3E%3CfeColorMatrix type="saturate" values="0"/%3E%3CfeComponentTransfer%3E%3CfeFuncA type="table" tableValues="0 0 0 0.03 0.03"/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width="140" height="140" filter="url(%23n)" opacity="0.25"/%3E%3C/svg%3E");
+  background-size: 280px 280px;
+  background-attachment: fixed;
+  background-blend-mode: soft-light;
     padding: 18px;
     gap: 14px;
   }
@@ -2692,4 +2721,9 @@ img {
     transition-duration: 0.001ms !important;
     transition-delay: 0ms !important;
   }
+}
+
+.topbar, .sidebar, .bottom-nav, .search-input input, .btn, .chip, .account-menu, .dropdown, .sheet, .modal-sheet, .settings-grid > section, .update-panel, .downloads-empty, .downloads-list, .card, .panel {
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 10px 30px -20px rgba(0,0,0,0.6);
 }
