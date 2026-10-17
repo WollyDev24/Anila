@@ -139,6 +139,7 @@ img {
   display: flex;
   align-items: flex-start;
   min-height: 100vh;
+  background: radial-gradient(1400px 900px at 80% -10%, rgba(167,139,250,0.08) 0%, transparent 60%);
 }
 
 .sidebar {
