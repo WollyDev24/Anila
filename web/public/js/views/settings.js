@@ -21,6 +21,16 @@ import {
   onDiscordStatus,
   getDiscordStatus,
 } from "../presence.js";
+import {
+  updatesAvailable,
+  getUpdateState,
+  checkForUpdates,
+  onUpdateStatus,
+  installUpdate,
+  openRelease,
+  updateStatusText,
+  updateActions,
+} from "../updates.js";
 
 // The Electron wrapper exposes window.desktop (see web/desktop/preload.cjs) and
 // captures the AniList OAuth redirect for us, so sign-in needs no copy-pasting.
@@ -36,11 +46,16 @@ const DISCORD_STATUS = {
 };
 
 let unsubDiscordStatus = null;
+let unsubUpdateStatus = null;
 
 export function cleanup() {
   if (unsubDiscordStatus) {
     unsubDiscordStatus();
     unsubDiscordStatus = null;
+  }
+  if (unsubUpdateStatus) {
+    unsubUpdateStatus();
+    unsubUpdateStatus = null;
   }
 }
 
@@ -115,6 +130,7 @@ export async function render(container, params = {}) {
       </section>
 
       ${discordPanel(settings)}
+      ${updatesPanel()}
     </div>
   `;
 
@@ -153,6 +169,8 @@ export async function render(container, params = {}) {
     unsubDiscordStatus = onDiscordStatus(paint);
     getDiscordStatus().then(paint);
   }
+
+  wireUpdatesPanel(container);
 
   const accountSection = container.querySelector("#accountSection");
   accountSection.querySelector("#signInBtn")?.addEventListener("click", () => startSignIn(container));
@@ -229,6 +247,72 @@ function discordPanel(settings) {
     )}
     <div class="hint">Status: <span id="discordStatus" data-status="disabled">…</span></div>
   </section>`;
+}
+
+function updatesPanel() {
+  if (!updatesAvailable()) {
+    return `<section class="panel">
+      <h3>Updates</h3>
+      <div class="hint">Available in the desktop app (<code>./start-desktop.sh</code>).</div>
+    </section>`;
+  }
+  return `<section class="panel" id="updatesPanel">
+    <h3>Updates</h3>
+    <div class="field">
+      <div>
+        <div class="label">Anila <span id="updateVersion" class="update-version"></span></div>
+        <div class="hint" id="updateStatus" data-status="idle">Checking for updates…</div>
+      </div>
+      <div class="update-actions">
+        <button class="btn small ghost" id="updateCheck" type="button">Check now</button>
+        <button class="btn small" id="updateDownload" type="button" hidden>Download</button>
+        <button class="btn small primary" id="updateInstall" type="button" hidden>Restart to install</button>
+      </div>
+    </div>
+    <div class="update-progress" id="updateProgress" hidden>
+      <div class="update-bar"><i id="updateBar"></i></div>
+    </div>
+  </section>`;
+}
+
+function wireUpdatesPanel(container) {
+  const panel = container.querySelector("#updatesPanel");
+  if (!panel) return;
+  const versionEl = panel.querySelector("#updateVersion");
+  const statusEl = panel.querySelector("#updateStatus");
+  const checkBtn = panel.querySelector("#updateCheck");
+  const downloadBtn = panel.querySelector("#updateDownload");
+  const installBtn = panel.querySelector("#updateInstall");
+  const progressEl = panel.querySelector("#updateProgress");
+  const barEl = panel.querySelector("#updateBar");
+
+  const paint = (s) => {
+    const actions = updateActions(s);
+    if (versionEl) versionEl.textContent = s.currentVersion ? `v${s.currentVersion}` : "";
+    if (statusEl) {
+      statusEl.textContent = updateStatusText(s);
+      statusEl.dataset.status = s.status;
+    }
+    if (checkBtn) {
+      checkBtn.disabled = !actions.check;
+      checkBtn.textContent = s.status === "checking" ? "Checking…" : "Check now";
+    }
+    if (downloadBtn) downloadBtn.hidden = !actions.download;
+    if (installBtn) installBtn.hidden = !actions.install;
+    if (progressEl) progressEl.hidden = !actions.progress;
+    if (barEl && actions.progress) barEl.style.width = `${s.percent || 0}%`;
+  };
+
+  if (unsubUpdateStatus) unsubUpdateStatus();
+  unsubUpdateStatus = onUpdateStatus(paint);
+
+  checkBtn?.addEventListener("click", async () => {
+    paint(await checkForUpdates());
+  });
+  downloadBtn?.addEventListener("click", () => openRelease());
+  installBtn?.addEventListener("click", () => installUpdate());
+
+  getUpdateState().then(paint).catch(() => {});
 }
 
 function openSignInModal(container) {

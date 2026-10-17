@@ -11,6 +11,36 @@ let player = null;
 let current = null;
 let shellDropdowns = {};
 
+const DESKTOP_DL = (typeof window !== "undefined" && window.desktop && window.desktop.downloads);
+function safeName(name) {
+  return String(name || "Anila").replace(/[\\/\\|<>\\*\"\\?\\:\\t\\n\\r]+/g, " ").replace(/\\s+/g, " ").trim().slice(0,120) || "Anila";
+}
+async function desktopDownloadCurrent() {
+  if (!DESKTOP_DL || !current) return;
+  const stream = (current.sourcesResult?.streams || [])[Number(shellDropdowns.streamSelect?.value || 0)];
+  if (!stream) { toast("No stream selected."); return; }
+  const type = (stream.type || "").toLowerCase();
+  if (type !== "mp4" && !/\\.mp4($|\\?)/i.test(stream.url || "")) { toast("Download only supports direct MP4 streams.", "error"); return; }
+  const title = safeName(titleOf(current.media));
+  const ep = current.episode?.number != null ? String(current.episode.number) : String(current.episodeNumber || "");
+  const base = title + " - Episode " + ep;
+  const defaultName = base + ".mp4";
+  const chose = await DESKTOP_DL.chooseSave({ title: "Download " + base, defaultName });
+  if (chose.canceled || !chose.filePath) return;
+  let subUrl = null;
+  const subs = current.sourcesResult?.subtitles || [];
+  if (subs.length) {
+    const pref = (getSettings().subtitleLanguage || "en").toLowerCase();
+    let pick = subs.find((s) => ((s.lang||"").toLowerCase()===pref || (s.label||"").toLowerCase().includes(pref))) || subs[0];
+    subUrl = pick?.url || null;
+  }
+  try {
+    toast("Starting download…");
+    await DESKTOP_DL.download({ videoUrl: stream.url, subtitleUrl: subUrl, subtitleLang: (getSettings().subtitleLanguage || "en").split(/[^a-zA-Z]+/)[0].toLowerCase() || "en", filePath: chose.filePath });
+    toast("Download complete.");
+  } catch (err) { toast("Download failed: " + err.message, "error"); }
+}
+
 // ---- Discord presence state ----
 let presenceBase = null;
 let presenceKey = "";
@@ -202,7 +232,7 @@ async function renderShell(container, episodeNumber) {
               : ""
           }
           ${dropdownHtml("streamSelect", [], "", { className: "source-dd", label: "Stream", placeholder: "Source" })}
-          <a class="btn ghost small" href="#/anime/${media.id}">Details</a>
+          <button class="btn ghost small" id="dlBtn" type="button" title="Download (desktop only)">Download</button> <a class="btn ghost small" href="#/anime/${media.id}">Details</a>
         </div>
         <div id="playerNote"></div>
       </div>
@@ -276,6 +306,10 @@ async function renderShell(container, episodeNumber) {
     const btn = e.target.closest("[data-ep]");
     if (!btn) return;
     location.hash = `#/watch/${current.media.id}/${btn.dataset.ep}`;
+  });
+  container.querySelector("#dlBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    desktopDownloadCurrent();
   });
 }
 

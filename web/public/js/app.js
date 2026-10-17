@@ -5,6 +5,7 @@ import * as watch from "./views/watch.js";
 import * as schedule from "./views/schedule.js";
 import * as library from "./views/library.js";
 import * as profile from "./views/profile.js";
+import * as downloads from "./views/downloads.js";
 import * as settings from "./views/settings.js";
 import { escapeHtml, toast } from "./ui.js";
 import { initRailFades } from "./rail-fade.js";
@@ -13,10 +14,13 @@ import {
   getViewer,
   clearToken,
   pushSearchHistory,
+  getSidebarCollapsed,
+  setSidebarCollapsed,
   onChange,
 } from "./store.js";
 import { captureRedirectToken } from "./oauth.js";
 import { setRouteActivity, applyDiscordConfig } from "./presence.js";
+import { updatesAvailable, getUpdateState, onUpdateStatus } from "./updates.js";
 
 const view = document.getElementById("view");
 const searchForm = document.getElementById("searchForm");
@@ -26,6 +30,7 @@ const accountMenu = document.getElementById("accountMenu");
 const accountMenuHead = document.getElementById("accountMenuHead");
 const accountSignout = document.getElementById("accountSignout");
 const accountSignin = document.getElementById("accountSignin");
+const sideToggle = document.getElementById("sideToggle");
 
 const desktop = typeof window !== "undefined" ? window.desktop : null;
 const isDesktop = desktop?.isDesktop === true;
@@ -102,6 +107,10 @@ async function router() {
       setActiveNav("library");
       renderView(library, view, params);
       break;
+    case "downloads":
+      setActiveNav("downloads");
+      renderView(downloads, view, params);
+      break;
     case "settings":
       setActiveNav("settings");
       renderView(settings, view, params);
@@ -122,6 +131,25 @@ function setActiveNav(route) {
     a.classList.toggle("active", a.dataset.route === route);
   });
 }
+
+// Sidebar collapse: a manual, persisted state that mirrors the responsive icon
+// rail (icons only, labels hidden).
+const appEl = document.querySelector(".app");
+
+function applySidebarCollapsed(collapsed) {
+  appEl?.classList.toggle("sidebar-collapsed", collapsed);
+  if (sideToggle) {
+    sideToggle.setAttribute("aria-expanded", String(!collapsed));
+    sideToggle.setAttribute("aria-label", collapsed ? "Expand sidebar" : "Collapse sidebar");
+    sideToggle.title = collapsed ? "Expand sidebar" : "Collapse sidebar";
+  }
+}
+
+sideToggle?.addEventListener("click", () => {
+  const collapsed = !appEl?.classList.contains("sidebar-collapsed");
+  setSidebarCollapsed(collapsed);
+  applySidebarCollapsed(collapsed);
+});
 
 function updateAccountButton() {
   const viewer = getViewer();
@@ -225,9 +253,40 @@ searchForm.addEventListener("submit", (e) => {
 (async function bootstrap() {
   await captureRedirectToken();
   updateAccountButton();
+  applySidebarCollapsed(getSidebarCollapsed());
   onChange(updateAccountButton);
   applyDiscordConfig();
   initRailFades();
   if (!location.hash) location.hash = "#/";
   else await router();
+  announceUpdate();
 })();
+
+// Tell the user once per version when an update is found. The desktop main
+// process runs the actual check on launch; we also pull the current state in
+// case it already finished before this listener attached.
+function announceUpdate() {
+  if (!updatesAvailable()) return;
+  const NOTIFY_KEY = "anila.updateNotified";
+  const announce = (state) => {
+    if ((state.status === "available" || state.status === "downloaded") && state.version) {
+      let seen = null;
+      try {
+        seen = localStorage.getItem(NOTIFY_KEY);
+      } catch {
+        /* storage may be unavailable */
+      }
+      if (seen === state.version) return;
+      try {
+        localStorage.setItem(NOTIFY_KEY, state.version);
+      } catch {
+        /* ignore */
+      }
+      toast(`Anila v${state.version} is available — open Settings to update.`);
+    }
+  };
+  onUpdateStatus(announce);
+  getUpdateState()
+    .then(announce)
+    .catch(() => {});
+}

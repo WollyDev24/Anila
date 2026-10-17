@@ -7,6 +7,7 @@ const KEYS = {
   token: "anila.token",
   viewer: "anila.viewer",
   searchHistory: "anila.searchHistory",
+  sidebarCollapsed: "anila.sidebarCollapsed",
 };
 
 export const DEFAULT_SETTINGS = {
@@ -165,6 +166,14 @@ export function pushSearchHistory(term) {
   const list = getSearchHistory().filter((t) => t !== term2);
   list.unshift(term2);
   write(KEYS.searchHistory, list.slice(0, 12));
+}
+
+// ---------- ui preferences ----------
+export function getSidebarCollapsed() {
+  return read(KEYS.sidebarCollapsed, false) === true;
+}
+export function setSidebarCollapsed(collapsed) {
+  write(KEYS.sidebarCollapsed, Boolean(collapsed));
 }
 
 // Keep cached state fresh when another window (e.g. the desktop Settings

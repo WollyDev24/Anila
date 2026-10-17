@@ -1,12 +1,16 @@
 // Anila desktop — Electron wrapper.
 // Embeds the Node server (server/server.mjs) in-process and shows the app in
 // its own window, so no external browser is needed. Same code, same APIs.
-import { app, BrowserWindow, ipcMain, session, shell, webContents } from "electron";
+import { app, BrowserWindow, ipcMain, session, shell, webContents, dialog } from "electron";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import fs from "node:fs";
+import https from "node:https";
+import http from "node:http";
 import { wireOAuthRedirects } from "./oauth.mjs";
 import { DiscordPresence } from "./rpc.mjs";
 import { ProviderBridge } from "./bridge.mjs";
+import { createUpdater } from "./updater.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -107,6 +111,168 @@ ipcMain.handle("discord:get-status", () => ({
   supported: presence.supported,
   status: presence.status,
 }));
+
+// ---- Auto-update ----
+// electron-updater can install in place on Windows (NSIS) and Linux AppImage
+// builds; everywhere else (macOS, .deb, dev) we fall back to a GitHub Releases
+// check that points at the download page.
+const isAppImage = process.platform === "linux" && !!process.env.APPIMAGE;
+const canAutoUpdate = app.isPackaged && (process.platform === "win32" || isAppImage);
+
+const updater = createUpdater({
+  currentVersion: app.getVersion(),
+  canAutoUpdate,
+  openExternal: (url) => shell.openExternal(url),
+  send: (state) => {
+    for (const win of BrowserWindow.getAllWindows()) {
+      if (!win.isDestroyed()) win.webContents.send("updates:status", state);
+    }
+  },
+  log: (msg) => {
+    if (DEBUG) console.log(`[updates] ${msg}`);
+  },
+  loadAutoUpdater: async () => {
+    try {
+      const mod = await import("electron-updater");
+      const au = mod.autoUpdater || mod.default?.autoUpdater;
+      if (!au) throw new Error("autoUpdater export missing");
+      if (DEBUG) {
+        au.logger = {
+          info: (m) => console.log(`[updater] ${m}`),
+          warn: (m) => console.warn(`[updater] ${m}`),
+          error: (m) => console.error(`[updater] ${m}`),
+          debug: () => {},
+        };
+      }
+      return au;
+    } catch (err) {
+      console.warn(`Anila desktop: electron-updater unavailable (${err.message})`);
+      return null;
+    }
+  },
+});
+
+ipcMain.handle("updates:get-state", () => updater.getState());
+ipcMain.handle("updates:check", () => updater.check());
+ipcMain.on("updates:install", () => updater.install());
+ipcMain.on("updates:open-release", (_e, url) =>
+  updater.openRelease(typeof url === "string" ? url : undefined),
+);
+
+function vttToSrt(vtt) {
+  let s = String(vtt || "");
+  s = s.replace(/^WEBVTT[^\n]*\n*/i, "");
+  s = s.replace(/(\d{2}):(\d{2}):(\d{2})\.(\d{3})/g, "$1:$2:$3,$4");
+  s = s.replace(/\r\n/g, "\n");
+  s = s.trim();
+  return s;
+}
+
+function downloadHttp(url, out, onProgress) {
+  const client = url.startsWith("https:") ? https : http;
+  return new Promise((resolve, reject) => {
+    const req = client.get(url, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) {
+        res.destroy();
+        return downloadHttp(res.headers.location, out, onProgress).then(resolve).catch(reject);
+      }
+      if (res.statusCode !== 200) {
+        res.destroy();
+        return reject(new Error(`Download failed: ${res.statusCode}`));
+      }
+      const total = Number(res.headers["content-length"]) || 0;
+      let received = 0;
+      const ws = fs.createWriteStream(out);
+      res.on("data", (chunk) => {
+        received += chunk.length;
+        if (total > 0 && onProgress) onProgress(Math.min(100, Math.round((received / total) * 100)));
+      });
+      res.pipe(ws);
+      ws.on("finish", () => ws.close(() => resolve()));
+      ws.on("error", (e) => {
+        try { ws.close(); } catch {}
+        reject(e);
+      });
+    });
+    req.on("error", reject);
+  });
+}
+
+function anilaMoviesDir() {
+  return path.join(app.getPath("videos"), "Anila");
+}
+
+ipcMain.handle("downloads:list", () => {
+  try {
+    if (!fs.existsSync(anilaMoviesDir())) return { dir: anilaMoviesDir(), files: [] };
+    const dirents = fs.readdirSync(anilaMoviesDir(), { withFileTypes: true });
+    const files = dirents
+      .filter((d) => d.isFile() && /\.(mp4|mkv|webm|mov|m4v|srt|vtt)$/i.test(d.name))
+      .map((d) => {
+        const st = fs.statSync(path.join(anilaMoviesDir(), d.name));
+        return { name: d.name, size: st.size, mtimeMs: st.mtimeMs };
+      })
+      .sort((a, b) => b.mtimeMs - a.mtimeMs);
+    return { dir: anilaMoviesDir(), files };
+  } catch (err) {
+    console.warn(`Anila desktop: list downloads failed (${err.message})`);
+    return { dir: anilaMoviesDir(), files: [], error: err.message };
+  }
+});
+
+ipcMain.handle("downloads:open-folder", async () => {
+  const dir = anilaMoviesDir();
+  if (!fs.existsSync(dir)) {
+    try { fs.mkdirSync(dir, { recursive: true }); } catch {}
+  }
+  await shell.openPath(dir);
+  return { ok: true };
+});
+
+ipcMain.handle("downloads:choose-save", async (_e, opts = {}) => {
+
+  const { title = "Anila", defaultName = "download.mp4" } = opts;
+  const result = await dialog.showSaveDialog({
+    title,
+    defaultPath: defaultName,
+    filters: [
+      { name: "MP4", extensions: ["mp4"] },
+      { name: "All Files", extensions: ["*"] },
+    ],
+  });
+  if (result.canceled || !result.filePath) return { canceled: true };
+  return { canceled: false, filePath: result.filePath };
+});
+
+ipcMain.handle("downloads:download", async (e, payload = {}) => {
+  const { videoUrl, subtitleUrl, subtitleLang = "en", filePath } = payload;
+  if (!filePath || !videoUrl) throw new Error("Missing filePath or videoUrl");
+  const dir = path.dirname(filePath);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  await downloadHttp(videoUrl, filePath, (pct) => {
+    try { e.sender.send("downloads:progress", { filePath, pct }); } catch {}
+  });
+  if (subtitleUrl) {
+    try {
+      const subPath = filePath.replace(/\.[^.]+$/, `.${subtitleLang || "en"}.srt`);
+      const tmp = await new Promise((resolve, reject) => {
+        const client = subtitleUrl.startsWith("https:") ? https : http;
+        const req = client.get(subtitleUrl, (res) => {
+          if (res.statusCode !== 200) { res.destroy(); return reject(new Error(`Subtitle failed: ${res.statusCode}`)); }
+          let data = "";
+          res.setEncoding("utf8");
+          res.on("data", (c) => { data += c; });
+          res.on("end", () => resolve(data));
+        });
+        req.on("error", reject);
+      });
+      fs.writeFileSync(subPath, vttToSrt(tmp));
+    } catch (err) {
+      console.warn(`Anila desktop: subtitle download failed (${err.message})`);
+    }
+  }
+  return { ok: true };
+});
 
 function wireOAuth(contents) {
   const closeIfPopup = () => {
@@ -366,6 +532,12 @@ async function start() {
   }
 
   spawnMainWindow();
+
+  // Check for updates shortly after launch, once the UI has settled. Errors
+  // (offline, rate-limited) just surface as a status in Settings.
+  setTimeout(() => {
+    updater.check().catch(() => {});
+  }, 4000);
 
   // Warm the Miruro bridge in the background so the first playback doesn't wait
   // on the Cloudflare challenge round-trip. Failures are non-fatal.

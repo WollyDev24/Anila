@@ -23,4 +23,26 @@ contextBridge.exposeInMainWorld("desktop", {
       return () => ipcRenderer.removeListener("discord:status", handler);
     },
   },
+  updates: {
+    getState: () => ipcRenderer.invoke("updates:get-state"),
+    check: () => ipcRenderer.invoke("updates:check"),
+    install: () => ipcRenderer.send("updates:install"),
+    openRelease: (url) => ipcRenderer.send("updates:open-release", url),
+    onStatus: (cb) => {
+      const handler = (_e, state) => cb(state);
+      ipcRenderer.on("updates:status", handler);
+      return () => ipcRenderer.removeListener("updates:status", handler);
+    },
+  },
+  downloads: {
+    chooseSave: (opts) => ipcRenderer.invoke("downloads:choose-save", opts),
+    download: (payload) => ipcRenderer.invoke("downloads:download", payload),
+    list: () => ipcRenderer.invoke("downloads:list"),
+    openFolder: () => ipcRenderer.invoke("downloads:open-folder"),
+    onProgress: (cb) => {
+      const handler = (_e, p) => cb(p);
+      ipcRenderer.on("downloads:progress", handler);
+      return () => ipcRenderer.removeListener("downloads:progress", handler);
+    },
+  },
 });

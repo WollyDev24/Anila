@@ -26,7 +26,8 @@
     "electron@37.10.3": true
   },
   "dependencies": {
-    "@xhayper/discord-rpc": "^1.5.1"
+    "@xhayper/discord-rpc": "^1.5.1",
+    "electron-updater": "^6.8.9"
   },
   "build": {
     "appId": "com.wollydev.anila",
@@ -43,15 +44,33 @@
       "bridge.mjs",
       "oauth.mjs",
       "rpc.mjs",
+      "updater.mjs",
+      "updater-version.mjs",
       "icon.png",
       "package.json"
     ],
     "extraResources": [
-      { "from": "../server", "to": "server" },
-      { "from": "../public", "to": "public" }
+      {
+        "from": "../server",
+        "to": "server"
+      },
+      {
+        "from": "../public",
+        "to": "public"
+      }
+    ],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "WollyDev24",
+        "repo": "Anila"
+      }
     ],
     "linux": {
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "AudioVideo",
       "icon": "build-res/icon.png",
       "maintainer": "WollyDev24 <wollywoll8844@gmail.com>",
@@ -62,7 +81,9 @@
       }
     },
     "win": {
-      "target": ["nsis"],
+      "target": [
+        "nsis"
+      ],
       "icon": "build-res/icon.png"
     },
     "nsis": {
@@ -72,7 +93,10 @@
       "shortcutName": "Anila"
     },
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.entertainment",
       "icon": "build-res/icon.png"
     }

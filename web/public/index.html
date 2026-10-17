@@ -45,6 +45,15 @@
         <path d="M14.5 4H18a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3.5" />
         <path d="M9 12h11M9 12l3.5-3.5M9 12l3.5 3.5" />
       </symbol>
+      <symbol id="ic-collapse" viewBox="0 0 24 24">
+        <path d="M14.5 7 9.5 12l5 5" />
+        <path d="M19 5v14" />
+      </symbol>
+      <symbol id="ic-download" viewBox="0 0 24 24">
+        <path d="M5 19h14" />
+        <path d="M12 4v11M12 15l3.5-3.5M12 15l-3.5-3.5" />
+      </symbol>
+
     </svg>
 
     <div class="app">
@@ -81,9 +90,24 @@
           <a href="#/library" data-route="library">
             <svg class="ico"><use href="#ic-library" /></svg><span class="nav-label">Library</span>
           </a>
+          <a href="#/downloads" data-route="downloads">
+            <svg class="ico"><use href="#ic-download" /></svg><span class="nav-label">Downloads</span>
+          </a>
         </nav>
 
         <div class="sidebar-spacer"></div>
+
+        <button
+          class="side-toggle"
+          id="sideToggle"
+          type="button"
+          aria-label="Collapse sidebar"
+          aria-expanded="true"
+          title="Collapse sidebar"
+        >
+          <svg class="ico" aria-hidden="true"><use href="#ic-collapse" /></svg>
+          <span class="nav-label">Collapse</span>
+        </button>
 
         <div class="account" id="account">
           <button

@@ -66,6 +66,8 @@ jobs:
             web/desktop/release/*.exe
             web/desktop/release/*.dmg
             web/desktop/release/*.zip
+            web/desktop/release/*.yml
+            web/desktop/release/*.blockmap
 
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/')
@@ -77,3 +79,5 @@ jobs:
             web/desktop/release/*.exe
             web/desktop/release/*.dmg
             web/desktop/release/*.zip
+            web/desktop/release/*.yml
+            web/desktop/release/*.blockmap

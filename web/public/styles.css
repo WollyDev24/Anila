@@ -141,6 +141,7 @@ img {
   padding: 16px 14px 14px;
   background: linear-gradient(180deg, rgba(17, 17, 26, 0.86), rgba(9, 9, 14, 0.86));
   border-right: 1px solid var(--line);
+  transition: width 0.22s var(--ease-out), padding 0.22s var(--ease-out);
 }
 
 .brand {
@@ -287,6 +288,40 @@ img {
 
 .nav a.active .ico {
   color: var(--accent-2);
+  opacity: 1;
+}
+
+/* ---------- sidebar collapse toggle ---------- */
+.side-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.side-toggle:hover {
+  color: var(--text);
+  background: var(--glass-hi);
+}
+
+.side-toggle .ico {
+  opacity: 0.8;
+  transition: transform 0.25s var(--ease-out), opacity 0.15s;
+}
+
+.side-toggle:hover .ico {
   opacity: 1;
 }
 
@@ -463,6 +498,53 @@ img {
 
 .sidebar .account-menu {
   animation: account-pop-up 0.14s ease;
+}
+
+/* Manual collapse (the toggle button): keep the icons, drop the labels. Mirrors
+   the responsive icon rail below so both states look identical. Wide screens
+   only — narrower ones auto-collapse via the media queries below. */
+@media (min-width: 961px) {
+  .app.sidebar-collapsed .sidebar {
+    width: 78px;
+    padding: 16px 10px;
+  }
+  .app.sidebar-collapsed .brand {
+    justify-content: center;
+    padding: 4px 0 16px;
+  }
+  .app.sidebar-collapsed .brand-name,
+  .app.sidebar-collapsed .nav-label,
+  .app.sidebar-collapsed .account-name {
+    display: none;
+  }
+  .app.sidebar-collapsed .nav {
+    width: 100%;
+  }
+  .app.sidebar-collapsed .nav a {
+    justify-content: center;
+    gap: 0;
+    padding: 12px;
+  }
+  .app.sidebar-collapsed .side-toggle {
+    justify-content: center;
+    gap: 0;
+    padding: 12px;
+  }
+  .app.sidebar-collapsed .side-toggle .ico {
+    transform: rotate(180deg);
+  }
+  .app.sidebar-collapsed .sidebar .account {
+    display: flex;
+    justify-content: center;
+  }
+  .app.sidebar-collapsed .sidebar .account-btn {
+    justify-content: center;
+    padding: 6px;
+  }
+  .app.sidebar-collapsed .sidebar .account-menu {
+    left: 0;
+    right: auto;
+  }
 }
 
 /* ---------- layout ---------- */
@@ -1831,6 +1913,36 @@ img {
   margin-top: 3px;
 }
 
+/* updates panel */
+.update-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.update-version {
+  font-size: 12.5px;
+  color: var(--muted-2);
+  font-weight: 500;
+}
+.update-progress {
+  margin: 6px 0 10px;
+}
+.update-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-elev-2);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.update-bar i {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transition: width 0.2s ease;
+}
+
 .switch {
   position: relative;
   width: 46px;
@@ -2200,6 +2312,10 @@ img {
   .account-name {
     display: none;
   }
+  /* Narrow screens auto-collapse, so the manual toggle is redundant here. */
+  .side-toggle {
+    display: none;
+  }
   .nav {
     width: 100%;
   }
@@ -2480,6 +2596,7 @@ img {
 /* Sidebar + header assemble once on load. */
 .sidebar .brand,
 .sidebar .nav a,
+.sidebar .side-toggle,
 .sidebar .account {
   animation: slide-in-left 0.5s var(--ease-out) backwards;
 }
@@ -2494,6 +2611,9 @@ img {
 }
 .sidebar .nav a:nth-child(4) {
   animation-delay: 0.2s;
+}
+.sidebar .side-toggle {
+  animation-delay: 0.23s;
 }
 .sidebar .account {
   animation-delay: 0.25s;
