@@ -1,7 +1,7 @@
 {
   "name": "anila-desktop",
-  "version": "1.0.0",
-  "description": "Anila — anime tracker and streaming desktop client",
+  "version": "1.1.0",
+  "description": "Anila \u2014 anime tracker and streaming desktop client",
   "author": {
     "name": "WollyDev24",
     "email": "wollywoll8844@gmail.com"
@@ -32,7 +32,7 @@
   "build": {
     "appId": "com.wollydev.anila",
     "productName": "Anila",
-    "copyright": "Copyright © 2026 WollyDev24",
+    "copyright": "Copyright \u00a9 2026 WollyDev24",
     "directories": {
       "output": "release",
       "buildResources": "build-res"
