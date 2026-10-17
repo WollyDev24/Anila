@@ -230,8 +230,8 @@ img {
   border-radius: 999px;
   border: 1px solid var(--line);
   background: var(--glass);
-  backdrop-filter: blur(14px) saturate(150%);
-  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(1.16);
+  -webkit-backdrop-filter: blur(20px) saturate(1.16);
   color: var(--text);
   outline: none;
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
