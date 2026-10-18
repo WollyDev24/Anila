@@ -1,4 +1,4 @@
-import { animeInfo } from "../anilist.js";
+import { animeInfo, mediaListEntry } from "../anilist.js";
 import {
   getToken,
   getProgress,
@@ -85,7 +85,7 @@ export async function render(container, params = {}) {
             <a class="btn primary" href="#/watch/${media.id}/${resumeEp}">▶ ${
               progress ? `Resume ep ${resumeEp}` : "Watch now"
             }</a>
-            <button class="btn ghost" id="listBtn">${listButtonLabel(media)}</button>
+            <button class="btn ghost" id="listBtn">${listButtonLabel(null)}</button>
             <button class="btn ghost" id="saveBtn">${isSaved(media) ? "♥ Saved" : "♡ Save"}</button>
           </div>
         </div>
@@ -135,18 +135,54 @@ export async function render(container, params = {}) {
     e.currentTarget.textContent = saved ? "♥ Saved" : "♡ Save";
     toast(saved ? "Saved to your library" : "Removed from library");
   });
-  container.querySelector("#listBtn")?.addEventListener("click", () => openListModal(media));
+  container.querySelector("#listBtn")?.addEventListener("click", () => openListModal(media, container));
+  // Reflect the viewer's current AniList status on the button (async, best-effort).
+  refreshListButton(container, media, token);
 }
 
-function listButtonLabel(media) {
-  return getToken() ? "+ AniList list" : "+ Add to library";
+const STATUS_LABELS = {
+  CURRENT: "Watching",
+  PLANNING: "Planning",
+  COMPLETED: "Completed",
+  REPEATING: "Rewatching",
+  PAUSED: "Paused",
+  DROPPED: "Dropped",
+};
+
+function statusLabelText(status) {
+  return STATUS_LABELS[status] || status || "In list";
 }
 
-function openListModal(media) {
+function listButtonLabel(entry) {
+  if (!getToken()) return "+ Add to library";
+  if (!entry) return "+ AniList list";
+  return `✓ ${statusLabelText(entry.status)}`;
+}
+
+function paintListButton(container, entry) {
+  const btn = container.querySelector("#listBtn");
+  if (!btn) return;
+  btn.textContent = listButtonLabel(entry);
+  btn.dataset.status = entry?.status || "";
+}
+
+async function refreshListButton(container, media, viewToken) {
+  if (!getToken()) return;
+  try {
+    const entry = await mediaListEntry(media.id);
+    if (isStale(container, viewToken)) return;
+    paintListButton(container, entry);
+  } catch {
+    /* best-effort — leave the default label */
+  }
+}
+
+function openListModal(media, container) {
   if (!getToken()) {
     const saved = toggleSaved(media);
     toast(saved ? "Saved to your local library" : "Removed from library");
-    document.getElementById("listBtn").textContent = saved ? "♥ In library" : listButtonLabel(media);
+    const btn = container?.querySelector("#listBtn");
+    if (btn) btn.textContent = saved ? "♥ In library" : listButtonLabel(null);
     return;
   }
   const statuses = [
@@ -166,6 +202,7 @@ function openListModal(media) {
     btn.addEventListener("click", async () => {
       try {
         await saveToListFromDetail(media.id, btn.dataset.status);
+        paintListButton(container, { status: btn.dataset.status });
         toast(`Added to ${btn.textContent}`);
         closeModal();
       } catch (err) {
@@ -177,6 +214,7 @@ function openListModal(media) {
     try {
       const { syncSavedAnime } = await import("../anilist.js");
       await syncSavedAnime(media.id, false);
+      paintListButton(container, null);
       toast("Removed from AniList");
       closeModal();
     } catch (err) {
