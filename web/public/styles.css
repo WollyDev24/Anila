@@ -1549,6 +1549,57 @@ img {
   background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent);
 }
 
+.ytp-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(6, 6, 10, 0.55) 0%, rgba(6, 6, 10, 0.8) 75%);
+}
+
+.ytp-spinner {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.16);
+  border-top-color: var(--accent, #7c5cff);
+  border-right-color: rgba(167, 139, 250, 0.55);
+  animation: ytp-spin 0.9s linear infinite;
+}
+
+@keyframes ytp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ytp-loading-msg {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6);
+}
+
+.ytp-loading-sub {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.62);
+  margin-top: -6px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+  min-height: 1em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ytp-spinner {
+    animation-duration: 2.4s !important;
+  }
+}
+
 .ytp-big {
   position: absolute;
   top: 50%;

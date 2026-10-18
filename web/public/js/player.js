@@ -64,6 +64,11 @@ export function createPlayer(container, options) {
   shell.tabIndex = 0;
   shell.innerHTML = `
     <video class="player-video" playsinline preload="auto"></video>
+    <div class="ytp-loading" hidden>
+      <div class="ytp-spinner"></div>
+      <div class="ytp-loading-msg">Hold tight…</div>
+      <div class="ytp-loading-sub">Warming up the stream</div>
+    </div>
     <div class="ytp-gradient ytp-gradient-top"></div>
     <div class="ytp-gradient ytp-gradient-bottom"></div>
     <button class="ytp-big" type="button" aria-label="Play">${ICONS.play}</button>
@@ -96,6 +101,9 @@ export function createPlayer(container, options) {
   container.appendChild(shell);
 
   const video = shell.querySelector("video");
+  const loadingEl = shell.querySelector(".ytp-loading");
+  const loadingMsg = shell.querySelector(".ytp-loading-msg");
+  const loadingSub = shell.querySelector(".ytp-loading-sub");
   const bigBtn = shell.querySelector(".ytp-big");
   const playBtn = shell.querySelector(".ytp-play");
   const muteBtn = shell.querySelector(".ytp-mute");
@@ -131,8 +139,50 @@ export function createPlayer(container, options) {
 
   const MAX_NET_RETRIES = 3;
   const MAX_MEDIA_RETRIES = 2;
-  const LOAD_TIMEOUT_MS = 60000;
+  const LOAD_TIMEOUT_MS = 90000;
   const HIDE_DELAY = 2800;
+
+  const LOADING_MESSAGES = [
+    ["Hold tight…", "Warming up the stream"],
+    ["Almost ready…", "Fetching the first frames"],
+    ["Still with us…", "Buffering a little more"],
+    ["One moment…", "Things are moving along"],
+    ["So close…", "Just a few more seconds"],
+  ];
+  let loadingIndex = 0;
+  let loadingTimer = null;
+  let loadingVisible = false;
+
+  function paintLoadingMessage() {
+    const [msg, sub] = LOADING_MESSAGES[loadingIndex % LOADING_MESSAGES.length];
+    if (loadingMsg) loadingMsg.textContent = msg;
+    if (loadingSub) loadingSub.textContent = sub;
+    loadingIndex++;
+  }
+
+  function showLoading(message) {
+    if (!loadingEl) return;
+    loadingVisible = true;
+    if (message) {
+      if (loadingMsg) loadingMsg.textContent = message;
+      if (loadingSub) loadingSub.textContent = "";
+    } else if (loadingIndex === 0) {
+      paintLoadingMessage();
+    }
+    loadingEl.hidden = false;
+    if (!loadingTimer) loadingTimer = setInterval(paintLoadingMessage, 3500);
+  }
+
+  function hideLoading() {
+    if (!loadingEl) return;
+    loadingVisible = false;
+    loadingEl.hidden = true;
+    if (loadingTimer) {
+      clearInterval(loadingTimer);
+      loadingTimer = null;
+    }
+    loadingIndex = 0;
+  }
 
   function fail(reason) {
     if (failed || destroyed) return;
@@ -144,6 +194,7 @@ export function createPlayer(container, options) {
       /* ignore */
     }
     console.warn(`playback failed: ${reason}`);
+    hideLoading();
     showControls(true);
     try {
       onError(reason);
@@ -524,7 +575,21 @@ export function createPlayer(container, options) {
 
     video.addEventListener("loadeddata", () => {
       if (loadTimer) clearTimeout(loadTimer);
+      if (video.readyState >= 3 || !video.paused) hideLoading();
       syncPlayIcon();
+    });
+
+    video.addEventListener("playing", () => {
+      hideLoading();
+      syncPlayIcon();
+    });
+
+    video.addEventListener("waiting", () => {
+      if (!failed) showLoading("Buffering…");
+    });
+
+    video.addEventListener("canplay", () => {
+      if (!video.paused) hideLoading();
     });
 
     video.addEventListener("play", () => {
@@ -563,13 +628,14 @@ export function createPlayer(container, options) {
   }
 
   async function init() {
+    showLoading();
     const url = stream.proxyUrl || stream.url;
     const isHls = stream.type === "hls" || String(url).includes(".m3u8");
     if (isHls && !video.canPlayType("application/vnd.apple.mpegurl")) {
       const Hls = await loadHls();
       if (destroyed) return;
       if (Hls.isSupported()) {
-        hls = new Hls({ enableWorker: true, lowLatencyMode: false });
+        hls = new Hls({ enableWorker: true, lowLatencyMode: false, maxBufferLength: 60, maxMaxBufferLength: 120, backBufferLength: 30 });
         hls.loadSource(url);
         hls.attachMedia(video);
         hls.on(Hls.Events.ERROR, (_evt, data) => {
@@ -631,6 +697,7 @@ export function createPlayer(container, options) {
 
   init().catch((err) => {
     console.error(err);
+    hideLoading();
     video.insertAdjacentHTML(
       "afterend",
       `<div class="player-note">Playback failed to initialize: ${err.message}</div>`,
@@ -643,6 +710,10 @@ export function createPlayer(container, options) {
       destroyed = true;
       if (loadTimer) clearTimeout(loadTimer);
       if (hideTimer) clearTimeout(hideTimer);
+      if (loadingTimer) {
+        clearInterval(loadingTimer);
+        loadingTimer = null;
+      }
       if (clickTimer) clearTimeout(clickTimer);
       document.removeEventListener("fullscreenchange", onFullscreenChange);
       try {
