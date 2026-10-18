@@ -125,11 +125,11 @@ export function watchingActivity({
 } = {}) {
   const ep = episode != null && episode !== "" ? `Episode ${episode}` : null;
   const progress = duration > 0 ? `${formatTime(position)} / ${formatTime(duration)}` : null;
-  const stateParts = [paused ? "Paused" : null, ep].filter(Boolean);
-  const state = stateParts.length ? clip(stateParts.join(" · ")) : paused ? "Paused" : undefined;
+  const state = [`Watching ${title || "an anime"}`, paused ? "Paused" : null, ep, progress]
+    .filter(Boolean)
+    .join(" · ");
 
-  const activity = { type: ACTIVITY_TYPE, details: clip(title || "Anime"), state };
-
+  const activity = { type: ACTIVITY_TYPE, details: APP_NAME, state: clip(state) };
 
   const img = imageUrl(cover);
   if (img) {
