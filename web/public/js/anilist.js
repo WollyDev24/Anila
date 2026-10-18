@@ -1,5 +1,5 @@
 // AniList GraphQL client. All requests go through the local server's /api/anilist proxy.
-import { getToken } from "./store.js";
+import { getToken, clearToken } from "./store.js";
 import { remember, cacheKey } from "./cache.js";
 
 // Client-side pacing so burst views (home, schedule, detail) don't trip AniList's
@@ -66,7 +66,12 @@ async function gqlFetch(query, variables = {}, { auth = false, retries = 2 } = {
     } catch {
       throw new Error(`AniList returned a non-JSON response (${res.status})`);
     }
-    if (res.status === 401) throw new Error("AniList sign-in expired. Sign in again.");
+    if (res.status === 401) {
+      // Token was rejected (expired or revoked). Clear it so the UI reflects the
+      // signed-out state instead of looking connected while every call fails.
+      clearToken();
+      throw new Error("AniList sign-in expired. Sign in again.");
+    }
     if (res.status === 429 && attempt < retries) {
       const retryAfter = Number(res.headers.get("Retry-After") || 3) * 1000;
       await new Promise((r) => setTimeout(r, Math.min(retryAfter, 30000)));

@@ -60,17 +60,31 @@ export function setSetting(key, value) {
 }
 
 // ---------- token / viewer ----------
+// AniList access tokens are JWTs whose segments are base64url-encoded (they use
+// "-" and "_", and omit padding). Native atob() rejects those characters, so we
+// convert back to standard base64 (and restore padding) before decoding. Without
+// this, atob throws for most real tokens and the expiry check below is silently
+// skipped — an expired token is then treated as valid and every API call 401s.
+function decodeJwtPayload(token) {
+  const segment = String(token || "").split(".")[1] || "";
+  const b64 = segment.replace(/-/g, "+").replace(/_/g, "/");
+  const pad = b64.length % 4 ? "=".repeat(4 - (b64.length % 4)) : "";
+  return JSON.parse(atob(b64 + pad));
+}
+
 export function getToken() {
   const token = localStorage.getItem(KEYS.token);
   if (!token) return null;
   try {
-    const payload = JSON.parse(atob(token.split(".")[1] || ""));
+    const payload = decodeJwtPayload(token);
     if (payload.exp && payload.exp * 1000 < Date.now()) {
       clearToken();
       return null;
     }
     return token;
   } catch {
+    // Unparseable token: keep it (it may still be valid server-side) rather than
+    // force a sign-out, but we can't verify expiry locally.
     return token;
   }
 }
