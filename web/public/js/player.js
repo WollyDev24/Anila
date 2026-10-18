@@ -131,7 +131,7 @@ export function createPlayer(container, options) {
 
   const MAX_NET_RETRIES = 3;
   const MAX_MEDIA_RETRIES = 2;
-  const LOAD_TIMEOUT_MS = 30000;
+  const LOAD_TIMEOUT_MS = 60000;
   const HIDE_DELAY = 2800;
 
   function fail(reason) {

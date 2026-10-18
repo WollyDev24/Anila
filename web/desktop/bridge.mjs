@@ -14,8 +14,8 @@ import { BrowserWindow, net, session } from "electron";
 // from the app window's origin (127.0.0.1) and lets them survive restarts.
 const PARTITION = "persist:anila-providers";
 
-const LOAD_TIMEOUT_MS = 20000;
-const FETCH_TIMEOUT_MS = 30000;
+const LOAD_TIMEOUT_MS = 30000;
+const FETCH_TIMEOUT_MS = 60000;
 const CLEARANCE_TRIES = 12;
 const CLEARANCE_INTERVAL_MS = 1500;
 const MAX_LOG_BODY = 180;
@@ -194,7 +194,7 @@ export class ProviderBridge {
   netFetch(url, options = {}) {
     const method = options.method || "GET";
     const headers = options.headers || {};
-    const timeout = options.timeout || 30000;
+    const timeout = options.timeout || 60000;
     return new Promise((resolve, reject) => {
       let req;
       try {

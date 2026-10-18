@@ -167,7 +167,7 @@ async function handleAniList(req, res) {
       method: "POST",
       headers,
       body: raw,
-      timeout: 30000,
+      timeout: 60000,
       maxRedirects: 0,
     });
     // If AniList is rate-limiting or erroring, serve the last good copy rather
@@ -400,7 +400,7 @@ async function handleMedia(req, res, query) {
   try {
     upstream = await request(target.toString(), {
       headers,
-      timeout: 30000,
+      timeout: 60000,
       preferBrowser: true,
     });
   } catch (err) {
