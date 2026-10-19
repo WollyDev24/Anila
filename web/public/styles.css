@@ -23,6 +23,7 @@
   --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.45);
   --topbar-h: 62px;
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   color-scheme: dark;
 }
@@ -155,7 +156,7 @@ img {
   padding: 16px 14px 14px;
   background: linear-gradient(180deg, rgba(17, 17, 26, 0.86), rgba(9, 9, 14, 0.86));
   border-right: 1px solid var(--line);
-  transition: width 0.22s var(--ease-out), padding 0.22s var(--ease-out);
+  transition: width 0.3s var(--ease-smooth), padding 0.3s var(--ease-smooth);
 }
 
 .brand {
@@ -164,6 +165,8 @@ img {
   gap: 11px;
   padding: 4px 8px 16px;
   margin-bottom: 4px;
+  overflow: hidden;
+  transition: padding 0.3s var(--ease-smooth);
 }
 
 .brand-mark {
@@ -178,6 +181,7 @@ img {
   font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.02em;
+  transition: opacity 0.3s var(--ease-smooth);
 }
 
 .sidebar-spacer {
@@ -275,11 +279,16 @@ img {
   gap: 12px;
   padding: 10px 12px;
   border-radius: 10px;
+  overflow: hidden;
   color: var(--muted);
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.01em;
-  transition: color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s, padding 0.3s var(--ease-smooth);
+}
+
+.nav-label {
+  transition: opacity 0.3s var(--ease-smooth);
 }
 
 .nav a .ico {
@@ -321,8 +330,9 @@ img {
   font-weight: 600;
   letter-spacing: 0.01em;
   text-align: left;
+  overflow: hidden;
   cursor: pointer;
-  transition: color 0.15s, background 0.15s;
+  transition: color 0.15s, background 0.15s, padding 0.3s var(--ease-smooth);
 }
 
 .side-toggle:hover {
@@ -332,7 +342,7 @@ img {
 
 .side-toggle .ico {
   opacity: 0.8;
-  transition: transform 0.25s var(--ease-out), opacity 0.15s;
+  transition: transform 0.3s var(--ease-smooth), opacity 0.15s;
 }
 
 .side-toggle:hover .ico {
@@ -389,12 +399,13 @@ img {
   font-weight: 600;
   font-size: 14px;
   color: var(--muted);
-  transition: color 0.15s;
+  transition: color 0.15s, opacity 0.3s var(--ease-smooth);
 }
 
 .account {
   position: relative;
   flex: none;
+  display: flex;
 }
 
 .sidebar .account {
@@ -523,37 +534,29 @@ img {
     padding: 16px 10px;
   }
   .app.sidebar-collapsed .brand {
-    justify-content: center;
-    padding: 4px 0 16px;
+    padding: 4px 13.5px 16px;
   }
   .app.sidebar-collapsed .brand-name,
   .app.sidebar-collapsed .nav-label,
   .app.sidebar-collapsed .account-name {
-    display: none;
+    opacity: 0;
   }
   .app.sidebar-collapsed .nav {
     width: 100%;
   }
+  /* Icons are centred by animating left padding rather than justify-content,
+     which cannot transition. The value is (rail content width − icon width) / 2
+     for the 78px rail: content = 78 − 10 − 10 − 1 = 57px, so 18.5px for the 20px
+     nav/toggle icons and 13.5px for the 30px brand mark. Keep in sync if the
+     rail width ever changes. */
   .app.sidebar-collapsed .nav a {
-    justify-content: center;
-    gap: 0;
-    padding: 12px;
+    padding: 12px 18.5px;
   }
   .app.sidebar-collapsed .side-toggle {
-    justify-content: center;
-    gap: 0;
-    padding: 12px;
+    padding: 12px 18.5px;
   }
   .app.sidebar-collapsed .side-toggle .ico {
     transform: rotate(180deg);
-  }
-  .app.sidebar-collapsed .sidebar .account {
-    display: flex;
-    justify-content: center;
-  }
-  .app.sidebar-collapsed .sidebar .account-btn {
-    justify-content: center;
-    padding: 6px;
   }
   .app.sidebar-collapsed .sidebar .account-menu {
     left: 0;
